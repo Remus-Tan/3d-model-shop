@@ -10,7 +10,8 @@ import {
     SignUpButton,
     UserButton,
     UserProfile,
-    auth
+    auth,
+    currentUser
 } from "@clerk/nextjs";
 
 import {
@@ -21,11 +22,11 @@ import {
     DropdownMenuTrigger
 } from "../ui/dropdown-menu";
 
-export default function Topbar() {
-    const { userId } = auth();
+export default async function Topbar(type: String) {
+    const user = await currentUser();
 
     return (
-        <nav className="sticky top-0 left-0 right-0 shadow-sm flex items-center p-2 h-18 z-50 gap-4">
+        <nav className="sticky top-0 left-0 right-0 shadow-sm flex items-center pl-10 pr-10 p-2 h-18 z-50 gap-4">
             <Link href="/" className="flex items-center">
                 <Image
                     alt="logo"
@@ -33,15 +34,41 @@ export default function Topbar() {
                     width={64}
                     height={64}
                 />
-                <p className="text-yellow-500 font-semibold">
+                <p className="text-stone-800 font-semibold">
                     3D Shop
                 </p>
             </Link>
             <SearchBar />
             <ModeToggle />
 
-            {userId && (<UserButton />)}
-            {!userId && (
+            {user?.id && (
+                <>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <Image src={user.imageUrl} alt="Profile picture" width={32} height={32} className="rounded-full"/>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="p-0 pt-2 pb-2 mt-2 mr-14">
+                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
+                                <p>
+                                    Account thingy 1
+                                </p>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
+                                <p>
+                                    Account thingy 1
+                                </p>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="pt-1 bg-stone-300" />
+                            <SignOutButton>
+                                <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
+                                    Log Out
+                                </DropdownMenuItem>
+                            </SignOutButton>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>
+            )}
+            {!user?.id && (
                 <>
                     <DropdownMenu>
                         <DropdownMenuTrigger>
@@ -49,7 +76,7 @@ export default function Topbar() {
                                 Log in
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent className="p-0 pt-2 pb-2 mr-14">
                             <DropdownMenuItem className="flex-col items-start focus:bg-white">
                                 <p>
                                     Don&apos;t have an account?
@@ -70,7 +97,6 @@ export default function Topbar() {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <UserButton />
                 </>
             )}
         </nav>
