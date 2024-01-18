@@ -14,7 +14,8 @@ datasource db {
 model User {
   id          String       @id @unique
   email       String       @unique
-  name        String
+  firstName   String       @map(name: "first_name")
+  lastName    String       @map(name: "last_name")
   submissions Submission[]
 
   stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")

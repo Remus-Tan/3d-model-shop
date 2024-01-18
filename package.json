@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^4.30.3",
     "@clerk/nextjs": "^4.29.2",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.8.0",
@@ -17,6 +18,9 @@
     "@radix-ui/react-hover-card": "^1.0.7",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@react-three/fiber": "^8.15.14",
+    "@types/three": "^0.160.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "geist": "^1.2.1",
@@ -28,6 +32,7 @@
     "react-hook-form": "^7.49.3",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.160.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

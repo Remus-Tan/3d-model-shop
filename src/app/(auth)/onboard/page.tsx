@@ -1,46 +1,96 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { currentUser } from "@clerk/nextjs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default async function Onboard() {
-    const user = await currentUser();
+export default function Onboard() {
+    const { isSignedIn, user } = useUser();
+    const { toast } = useToast();
 
-    const dbUserEntry = await fetch(`http://localhost:3000/api/users/${user.userId}`);
-    if (!user) {
-        redirect("/");
-    }
 
-    const addUserToDb = await fetch(`http://localhost:3000/api/users/${user.userId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-            id: user?.id,
-            email: user?.primaryEmailAddressId,
-            name: user?.firstName
-        })
-    });
+    const [freshlyOnboarded, setOnboard] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    useEffect(() => {
+        if (!isSignedIn) return;
+
+        fetch(`http://localhost:3000/api/users/${user?.id}`)
+            .then((res) => {
+                console.log(res);
+
+                if (freshlyOnboarded) {
+                    setLoading(false);
+                }
+
+                if (res.status === 200 && !freshlyOnboarded) {
+                    toast({
+                        title: 'You are now logged in.',
+                        description: ` Welcome back, ${user.firstName}!`
+                    });
+                    router.push('/');
+                }
+
+                if (res.status === 404 && !freshlyOnboarded) {
+                    fetch(`http://localhost:3000/api/users/${user?.id}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            id: user.id,
+                            email: user.primaryEmailAddress?.emailAddress,
+                            firstName: user.firstName || "",
+                            lastName: user.lastName || ""
+                        })
+                    }).then((res) => setOnboard(true));
+                }
+            });
+
+    }, [isSignedIn, freshlyOnboarded]);
 
     return (
         <div className="flex flex-col justify-center m-auto mt-12 w-fit p-8 rounded-lg border-2 gap-4">
-            <Image src={user.imageUrl} alt="Profile picture" width={64} height={64} className="rounded-full self-center" />
-            <h1 className="text-4xl font-medium self-center">Welcome to 3D Shop! 😇</h1>
+            {loading && (
+                <>
+                    <Skeleton className="w-[64px] h-[64px] rounded-full self-center" />
+                    <Skeleton className="w-[420px] h-[40px] rounded-full" />
+                    <Skeleton className="w-[320px] h-[20px] rounded-full" />
 
-            <p>Would you like to set up your profile now?</p>
+                    <div className="flex gap-2 justify-end">
+                        <Skeleton className="h-[40px] rounded-full w-full" />
+                        <Skeleton className="h-[40px] rounded-full w-full" />
+                    </div>
+                </>
+            )}
 
-            <div className="flex gap-2 justify-end">
-                <Link href={"/"} className="w-full">
-                    <Button variant={"secondary"} className="w-full">
-                        I&apos;ll do it later.
-                    </Button>
-                </Link>
+            {!loading && (
+                <>
+                    <Image src={user?.imageUrl} alt="Profile picture" width={64} height={64} className="rounded-full self-center" />
+                    <h1 className="text-4xl font-medium self-center">Welcome to 3D Shop! 😇</h1>
 
-                <Link href={"/settings"} className="w-full">
-                    <Button className="w-full">
-                        Yes please!
-                    </Button>
-                </Link>
-            </div>
+                    <p>Would you like to set up your profile now?</p>
+
+                    <div className="flex gap-2 justify-end">
+                        <Link href={"/"} className="w-full">
+                            <Button variant={"secondary"} className="w-full">
+                                I&apos;ll do it later.
+                            </Button>
+                        </Link>
+
+                        <Link href={"/user/settings"} className="w-full">
+                            <Button className="w-full">
+                                Yes please!
+                            </Button>
+                        </Link>
+                    </div>
+                </>
+            )}
         </div >
     );
 }
