@@ -28,11 +28,9 @@ export default function Onboard() {
                     setLoading(false);
                 }
 
+                // In case users try to manually come to this page
+                // Freshly onboarded check is to prevent re-fetching
                 if (res.status === 200 && !freshlyOnboarded) {
-                    toast({
-                        title: 'You are now logged in.',
-                        description: ` Welcome back, ${user.firstName}!`
-                    });
                     router.push('/');
                 }
 

@@ -1,7 +1,7 @@
-import type { Metadata } from 'next'
+import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
-import '../globals.css'
+import '../../globals.css'
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from '@/components/theme-provider';
 import Topbar from '@/components/shared/Topbar';
@@ -20,14 +20,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={GeistSans.className}>
-        <body>
+        <body className='w-fit m-auto bg-stone-100'>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <Topbar />
             {children}
             <Toaster />
           </ThemeProvider>

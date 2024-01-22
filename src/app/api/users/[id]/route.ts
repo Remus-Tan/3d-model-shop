@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 
@@ -9,7 +8,7 @@ export async function GET(
 ) {
     try {
         console.log(`|====================================================================|`);
-        console.log(`~ Trying to GET ${params.id} ~`);
+        console.log(`| Trying to GET ${params.id} ~`);
         console.log(`|====================================================================|`);
         const result = await db.user.findUniqueOrThrow({ where: { id: params.id } });
         return NextResponse.json(result);
@@ -30,6 +29,9 @@ export async function POST(
 ) {
     try {
         const data = await req.json();
+        console.log(`|====================================================================|`);
+        console.log(`|Trying to POST ${JSON.stringify(data)} ~`);
+        console.log(`|====================================================================|`);
 
         const user = await db.user.create({
             data
@@ -39,6 +41,7 @@ export async function POST(
 
     } catch (error) {
         console.log("[User POST]", error);
+        console.log("Please verify the User Id, Clerk might have given the user a new ID but the database is preventing the creation of another user with the same email.");
         return NextResponse.json({error: "Internal Error"}, { status: 500 });
     }
 };

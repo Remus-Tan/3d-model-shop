@@ -18,18 +18,24 @@ model User {
   lastName    String       @map(name: "last_name")
   submissions Submission[]
 
-  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
-  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
-  stripePriceId          String?   @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+  // stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
+  // stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
+  // stripePriceId          String?   @map(name: "stripe_price_id")
+  // stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
 }
 
 model Submission {
   id          Int    @id @default(autoincrement())
-  title       String
-  description String
-  creator     User   @relation(fields: [creatorId], references: [id])
+  title       String?
+  description String?
+  creator     User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String
+  downloadUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([creatorId])
 }
 
 // model Comment {
