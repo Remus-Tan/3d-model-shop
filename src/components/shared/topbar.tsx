@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import SearchBar from "./searchbar";
+import SearchBar from "./Searchbar";
 import { ModeToggle } from "../mode-toggle";
 import { Button } from "../ui/button";
 
@@ -27,15 +27,15 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 
 export default function Topbar() {
-    const { isSignedIn, user } = useUser();
+    const { isLoaded, isSignedIn, user } = useUser();
     const [loading, setLoading] = useState(true);
     const { signOut } = useClerk();
     const { toast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
-        if (isSignedIn === null) return;
-
+        if (isLoaded == false) return;
+        
         setLoading(false);
 
     }, [isSignedIn]);
@@ -58,17 +58,19 @@ export default function Topbar() {
 
                 {loading && (
                     <>
-                    <Skeleton className="w-[200px] h-[20px] rounded-full" />
-                    <Skeleton className="w-[32px] h-[32px] rounded-full" />
+                        <Skeleton className="w-[200px] h-[20px] rounded-full" />
+                        <Skeleton className="w-[32px] h-[32px] rounded-full" />
                     </>
                 )}
 
                 {!loading && (
                     <>
                         {isSignedIn &&
-                            <Button>
-                                Upload
-                            </Button>
+                            <Link href="/upload">
+                                <Button>
+                                    Upload
+                                </Button>
+                            </Link>
                         }
 
                         <ModeToggle />
@@ -80,11 +82,11 @@ export default function Topbar() {
                                         <Image src={user.imageUrl} alt="Profile picture" width={32} height={32} className="rounded-full" />
                                     </DropdownMenuTrigger>
                                     < DropdownMenuContent className="p-0 pt-2 pb-2 mt-2 mr-14">
-                                        <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
-                                            <Link href={"/"}>
+                                        <Link href={"/modelview"}>
+                                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
                                                 Models
-                                            </Link>
-                                        </DropdownMenuItem>
+                                            </DropdownMenuItem>
+                                        </Link>
                                         <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
                                             <Link href={"/"}>
                                                 Likes
