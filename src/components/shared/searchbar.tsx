@@ -5,7 +5,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 
-export default function SearchBar() {
+export default function Searchbar() {
     const [inputPresent, setInputPresent] = useState(false);
 
     return (
@@ -19,7 +19,7 @@ export default function SearchBar() {
             />
             <Button className="
                 bg-white rounded-none rounded-r-md border-r border-b border-t transition-none
-                hover:bg-white hover:text-amber-400
+                hover:bg-stone-200
                 peer-focus:!ring-offset-0 peer-focus:!ring-0 peer-focus:border-amber-400
                 dark:bg-amber-400
                 ">

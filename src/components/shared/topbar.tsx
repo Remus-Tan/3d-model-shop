@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import Image from "next/image";
 import Link from "next/link";
-import SearchBar from "./Searchbar";
-import { ModeToggle } from "../mode-toggle";
-import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 import {
     SignInButton,
@@ -21,10 +21,20 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "../ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger
+} from "../ui/hover-card";
 import { useToast } from "../ui/use-toast";
-import { useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
+
+import { ChevronDown } from "lucide-react";
+
+import ModeToggle from "../mode-toggle";
+import Searchbar from "./Searchbar";
 
 export default function Topbar() {
     const { isLoaded, isSignedIn, user } = useUser();
@@ -35,10 +45,12 @@ export default function Topbar() {
 
     useEffect(() => {
         if (isLoaded == false) return;
-        
+
         setLoading(false);
 
-    }, [isSignedIn]);
+    }, [isLoaded]);
+
+
 
     return (
         <nav className="sticky top-0 left-0 right-0 shadow-sm">
@@ -54,7 +66,7 @@ export default function Topbar() {
                         3D Shop
                     </p>
                 </Link>
-                <SearchBar />
+                <Searchbar />
 
                 {loading && (
                     <>
@@ -75,86 +87,105 @@ export default function Topbar() {
 
                         <ModeToggle />
 
-                        {isSignedIn && (
-                            <>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger>
-                                        <Image src={user.imageUrl} alt="Profile picture" width={32} height={32} className="rounded-full" />
-                                    </DropdownMenuTrigger>
-                                    < DropdownMenuContent className="p-0 pt-2 pb-2 mt-2 mr-14">
-                                        <Link href={"/modelview"}>
-                                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
-                                                Models
-                                            </DropdownMenuItem>
-                                        </Link>
-                                        <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
-                                            <Link href={"/"}>
-                                                Likes
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator className="pt-1 bg-stone-300" />
-                                        <Link href={"/user/profile"}>
-                                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
-                                                Profile
-                                            </DropdownMenuItem>
-                                        </Link>
-                                        <Link href={"/user/settings"}>
-                                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
-                                                Settings
-                                            </DropdownMenuItem>
-                                        </Link>
-                                        <DropdownMenuSeparator className="pt-1 bg-stone-300" />
-                                        <div onClick={async () => {
-                                            await signOut();
-                                            toast({
-                                                title: "Logged out successfully.",
-                                                description: "See you again! 😋"
-                                            });
-                                            router.push('/');
-                                        }}>
-                                            <DropdownMenuItem className="flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer">
-                                                Log Out
-                                            </DropdownMenuItem>
-                                        </div>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </>
-                        )}
-
-                        {!isSignedIn && (
-                            <>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger>
-                                        <Button variant={"ghost"} className="dark:">
-                                            Log in
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="p-0 pt-2 pb-2 mr-14">
-                                        <DropdownMenuItem className="flex-col items-start focus:bg-white">
-                                            <p>
-                                                Don&apos;t have an account?
-                                            </p>
-                                            <SignUpButton mode="modal">
-                                                <p className="cursor-pointer">
-                                                    Click here to sign up!
-                                                </p>
-                                            </SignUpButton>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="focus:bg-white">
-                                            <SignInButton mode="modal">
-                                                <Button className="w-full">
-                                                    Log In
-                                                </Button>
-                                            </SignInButton>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </>
-                        )}
+                        {isSignedIn && <UserDropdown />}
+                        {!isSignedIn && <LogInDropdown />}
                     </>
                 )}
             </div>
         </nav >
     );
+
+    function UserDropdown() {
+        const hoverCardClass = "flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer p-2 text-sm";
+        const [hover, setHover] = useState(false);
+
+        const hoveredColor = "#e6cf00";
+        const defaultColor = "#424242";
+
+        return (
+            <HoverCard openDelay={0} closeDelay={10} onOpenChange={(open: boolean) => setHover(open)}>
+                <HoverCardTrigger className="flex items-baseline">
+                    <Link href="/user/profile">
+                        <Image src={user!.imageUrl} alt="Profile picture" width="32" height="32" className="mr-2 cursor-pointer" />
+                    </Link>
+                    <ChevronDown width={12} stroke={hover ? hoveredColor : defaultColor} />
+                </HoverCardTrigger>
+                <HoverCardContent className="p-0 pt-2 pb-2 w-32">
+                    <Link href="/user/profile">
+                        <div className={hoverCardClass}>
+                            Profile
+                        </div>
+                    </Link>
+
+                    <hr className="mt-2 mb-2" />
+
+                    <Link href="/modelview">
+                        <div className={hoverCardClass}>
+                            Models
+                        </div>
+                    </Link>
+                    <Link href="/">
+                        <div className={hoverCardClass}>
+                            Likes
+                        </div>
+                    </Link>
+
+                    <hr className="mt-2 mb-2" />
+
+                    <Link href="/user/settings">
+                        <div className={hoverCardClass}>
+                            Settings
+                        </div>
+                    </Link>
+
+                    <hr className="mt-2 mb-2" />
+
+                    <div onClick={async () => {
+                        await signOut();
+                        toast({
+                            title: "Logged out successfully.",
+                            description: "See you again! 😋"
+                        });
+                        router.push('/');
+                    }}>
+                        <div className={hoverCardClass}>
+                            Log Out
+                        </div>
+                    </div>
+                </HoverCardContent>
+            </HoverCard>
+        );
+    }
+
+    function LogInDropdown() {
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <Button variant={"ghost"} className="dark:">
+                        Log in
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="p-0 pt-2 pb-2 mr-14">
+                    <DropdownMenuItem className="flex-col items-start focus:bg-white">
+                        <p>
+                            Don&apos;t have an account?
+                        </p>
+                        <SignUpButton mode="modal">
+                            <p className="cursor-pointer">
+                                Click here to sign up!
+                            </p>
+                        </SignUpButton>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="focus:bg-white">
+                        <SignInButton mode="modal">
+                            <Button className="w-full">
+                                Log In
+                            </Button>
+                        </SignInButton>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    }
 }
