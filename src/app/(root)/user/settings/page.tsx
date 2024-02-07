@@ -1,21 +1,7 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useAuth } from "@clerk/nextjs";
-import useForm from "react-hook-form";
-import * as z from "zod";
-
-
-export default function Settings() {
-    const user = useAuth();
-
-    const getUserData = async () => {
-        await fetch('');
-
-    };
-
-    return (
-        <>
-        {user.userId}
-        </>
-    );
+// Redirect all users trying to access /settings because it doesn't exist
+// All settings pages are nested inside /settings e.g. /settings/profile
+export default function Page() {
+    redirect("/user/settings/profile");
 }

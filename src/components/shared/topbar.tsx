@@ -4,37 +4,21 @@ import { useEffect, useState } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-import {
-    SignInButton,
-    SignUpButton,
-    useUser,
-} from "@clerk/nextjs";
-
+import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
 import { useClerk } from "@clerk/clerk-react";
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "../ui/dropdown-menu";
-
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger
-} from "../ui/hover-card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import { useToast } from "../ui/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 
 import { ChevronDown } from "lucide-react";
 
-import ModeToggle from "../mode-toggle";
-import Searchbar from "./Searchbar";
+import ModeToggle from "./mode-toggle";
+import Searchbar from "./searchbar";
 
 export default function Topbar() {
     const { isLoaded, isSignedIn, user } = useUser();
@@ -42,6 +26,10 @@ export default function Topbar() {
     const { signOut } = useClerk();
     const { toast } = useToast();
     const router = useRouter();
+    const pathname = usePathname();
+
+    const isSettings = pathname === "/user/settings";
+    const logoType = isSettings ? "settings" : "regular";
 
     useEffect(() => {
         if (isLoaded == false) return;
@@ -50,23 +38,11 @@ export default function Topbar() {
 
     }, [isLoaded]);
 
-
-
     return (
-        <nav className="sticky top-0 left-0 right-0 shadow-sm">
+        <nav className="sticky top-0 left-0 right-0 shadow-sm backdrop-blur-md">
             <div className="max-w-[2000px] flex items-center pl-10 pr-10 p-2 h-18 z-50 gap-4 m-auto">
-                <Link href="/" className="flex items-center">
-                    <Image
-                        alt="logo"
-                        src="/logo.svg"
-                        width={64}
-                        height={64}
-                    />
-                    <p className="text-stone-800 font-semibold">
-                        3D Shop
-                    </p>
-                </Link>
-                <Searchbar />
+                <Logo type={logoType} />
+                {!isSettings && <Searchbar />}
 
                 {loading && (
                     <>
@@ -76,48 +52,72 @@ export default function Topbar() {
                 )}
 
                 {!loading && (
-                    <>
-                        {isSignedIn &&
-                            <Link href="/upload">
-                                <Button>
-                                    Upload
-                                </Button>
-                            </Link>
-                        }
-
+                    <div className="gap-4 flex items-center ml-auto">
+                        {isSignedIn && <UploadButton />}
                         <ModeToggle />
-
                         {isSignedIn && <UserDropdown />}
                         {!isSignedIn && <LogInDropdown />}
-                    </>
+                    </div>
                 )}
             </div>
         </nav >
     );
 
+
+    function Logo(
+        { type }: { type: "regular" | "settings" }
+    ) {
+        return (
+            <Link
+                className="flex items-center"
+                href={
+                    type === "regular" ?
+                        "/" :
+                        "/user/profile"
+                }>
+                <Image
+                    alt="logo"
+                    src="/logo.svg"
+                    width={0}
+                    height={0}
+                    className="w-full h-auto"
+                />
+                <p className="text-foreground font-semibold">
+                    {type === "regular" && <>3D Shop</>}
+                    {type === "settings" && <>Back to Profile</>}
+                </p>
+            </Link>
+        );
+    }
+
+    function UploadButton() {
+        return (
+            <Link href="/upload">
+                <Button>
+                    Upload
+                </Button>
+            </Link>
+        );
+    }
+
     function UserDropdown() {
-        const hoverCardClass = "flex-col items-start focus:bg-white hover:!bg-amber-400 transition-none rounded-none cursor-pointer p-2 text-sm";
+        const hoverCardClass = "flex-col items-start focus:bg-white hover:bg-primary hover:text-white transition-none rounded-none cursor-pointer p-2 text-sm";
         const [hover, setHover] = useState(false);
 
-        const hoveredColor = "#e6cf00";
-        const defaultColor = "#424242";
-
         return (
-            <HoverCard openDelay={0} closeDelay={10} onOpenChange={(open: boolean) => setHover(open)}>
+            <HoverCard openDelay={0} closeDelay={30} onOpenChange={(open: boolean) => setHover(open)}>
                 <HoverCardTrigger className="flex items-baseline">
-                    <Link href="/user/profile">
-                        <Image src={user!.imageUrl} alt="Profile picture" width="32" height="32" className="mr-2 cursor-pointer" />
-                    </Link>
-                    <ChevronDown width={12} stroke={hover ? hoveredColor : defaultColor} />
+                    <Image src={user!.imageUrl} alt="Profile picture" width="32" height="32" className="mr-2 rounded-sm" />
+                    <ChevronDown width={12} stroke={hover ? "orange" : "grey"} className="dark:outline" />
                 </HoverCardTrigger>
-                <HoverCardContent className="p-0 pt-2 pb-2 w-32">
+                <HoverCardContent className="p-0 pt-2 pb-2 w-32 dark:bg-zinc-700 border-border">
                     <Link href="/user/profile">
                         <div className={hoverCardClass}>
                             Profile
                         </div>
                     </Link>
 
-                    <hr className="mt-2 mb-2" />
+                    <hr className="my-2" />
 
                     <Link href="/modelview">
                         <div className={hoverCardClass}>
@@ -130,23 +130,23 @@ export default function Topbar() {
                         </div>
                     </Link>
 
-                    <hr className="mt-2 mb-2" />
+                    <hr className="my-2" />
 
-                    <Link href="/user/settings">
+                    <Link href="/user/settings/profile">
                         <div className={hoverCardClass}>
                             Settings
                         </div>
                     </Link>
 
-                    <hr className="mt-2 mb-2" />
+                    <hr className="my-2" />
 
                     <div onClick={async () => {
                         await signOut();
+                        router.push('/');
                         toast({
-                            title: "Logged out successfully.",
+                            title: "You're logged out.",
                             description: "See you again! 😋"
                         });
-                        router.push('/');
                     }}>
                         <div className={hoverCardClass}>
                             Log Out
@@ -159,33 +159,11 @@ export default function Topbar() {
 
     function LogInDropdown() {
         return (
-            <DropdownMenu>
-                <DropdownMenuTrigger>
-                    <Button variant={"ghost"} className="dark:">
-                        Log in
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="p-0 pt-2 pb-2 mr-14">
-                    <DropdownMenuItem className="flex-col items-start focus:bg-white">
-                        <p>
-                            Don&apos;t have an account?
-                        </p>
-                        <SignUpButton mode="modal">
-                            <p className="cursor-pointer">
-                                Click here to sign up!
-                            </p>
-                        </SignUpButton>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="focus:bg-white">
-                        <SignInButton mode="modal">
-                            <Button className="w-full">
-                                Log In
-                            </Button>
-                        </SignInButton>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+            <SignInButton mode="modal">
+                <Button variant={"ghost"}>
+                    Log in
+                </Button>
+            </SignInButton>
         );
     }
 }
