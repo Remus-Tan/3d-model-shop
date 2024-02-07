@@ -12,11 +12,19 @@ datasource db {
 }
 
 model User {
-  id          String       @id @unique
-  email       String       @unique
-  firstName   String       @map(name: "first_name")
-  lastName    String       @map(name: "last_name")
-  submissions Submission[]
+  id           String    @id @unique
+  email        String    @unique
+  emailPublic  Boolean   @default(false)
+  firstName    String    @map(name: "first_name")
+  lastName     String?   @map(name: "last_name")
+  handle       String    @unique
+  headline     String?   @default("")
+  aboutMe      String?   @default("") @map("about_me")
+  imageUrl     String    @map(name: "image_url")
+  externalUrls Json?     @map(name: "external_url")
+  models       Model[]
+  followers    Follows[] @relation("follower")
+  following    Follows[] @relation("following")
 
   // stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
   // stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
@@ -24,18 +32,29 @@ model User {
   // stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
 }
 
-model Submission {
-  id          Int    @id @default(autoincrement())
+model Model {
+  id          Int     @id @default(autoincrement())
   title       String?
   description String?
-  creator     User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  creatorId   String
-  downloadUrl String?
+  creator     User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId   String  @map("creator_id")
+  downloadUrl String? @map("download_url")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([creatorId])
+}
+
+model Follows {
+  follower    User   @relation("follower", fields: [followerId], references: [id])
+  followerId  String @map("follower_id")
+  following   User   @relation("following", fields: [followingId], references: [id])
+  followingId String @map("following_id")
+
+  @@id([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 // model Comment {
