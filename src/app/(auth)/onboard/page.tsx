@@ -20,7 +20,7 @@ export default function Onboard() {
     useEffect(() => {
         if (!isSignedIn) return;
 
-        fetch(`http://localhost:3000/api/users/${user?.id}`)
+        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user?.id}`)
             .then((res) => {
                 console.log(res);
 
@@ -35,7 +35,7 @@ export default function Onboard() {
                 }
 
                 if (res.status === 404 && !freshlyOnboarded) {
-                    fetch(`http://localhost:3000/api/users/${user?.id}`, {
+                    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user?.id}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -43,8 +43,10 @@ export default function Onboard() {
                         body: JSON.stringify({
                             id: user.id,
                             email: user.primaryEmailAddress?.emailAddress,
-                            firstName: user.firstName || "",
-                            lastName: user.lastName || ""
+                            firstName: user.firstName,
+                            lastName: user.lastName || "",
+                            handle: user.id,
+                            imageUrl: user.imageUrl
                         })
                     }).then((res) => setOnboard(true));
                 }
@@ -69,7 +71,7 @@ export default function Onboard() {
 
             {!loading && (
                 <>
-                    <Image src={user?.imageUrl} alt="Profile picture" width={64} height={64} className="rounded-full self-center" />
+                    <Image src={user!.imageUrl} alt="Profile picture" width={64} height={64} className="rounded-full self-center" />
                     <h1 className="text-4xl font-medium self-center">Welcome to 3D Shop! 😇</h1>
 
                     <p>Would you like to set up your profile now?</p>
@@ -81,7 +83,7 @@ export default function Onboard() {
                             </Button>
                         </Link>
 
-                        <Link href={"/user/settings"} className="w-full">
+                        <Link href={"/user/settings/profile"} className="w-full">
                             <Button className="w-full">
                                 Yes please!
                             </Button>

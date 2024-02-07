@@ -1,4 +1,4 @@
-import Topbar from '@/components/shared/Topbar';
+import Topbar from '@/components/shared/topbar';
 import { SignIn } from '@clerk/nextjs';
 import Image from 'next/image';
 

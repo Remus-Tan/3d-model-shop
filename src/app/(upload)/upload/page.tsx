@@ -1,4 +1,4 @@
-import Dropzone from "@/components/shared/Dropzone";
+import Dropzone from "@/components/shared/dropzone";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
