@@ -16,7 +16,7 @@ function LevaControls() {
 }
 
 function Scene() {
-    const cameraControlsRef = useRef();
+    const cameraControlsRef = useRef<CameraControls>(null);
     const { camera } = useThree();
 
     // camera.position.x = 5;
@@ -28,9 +28,7 @@ function Scene() {
     return (
         <>
             <LevaControls />
-            <Stage
-
-            >
+            <Stage>
                 <Model castShadow />
             </Stage>
             <CameraControls
