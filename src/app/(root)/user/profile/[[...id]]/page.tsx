@@ -70,7 +70,7 @@ async function getModelsData(
     { params }: { params: { id: string } },
 
 ) {
-    const modelsData = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/model-data/" + get)
+    // const modelsData = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/model-data/" + get)
 }
 
 export default async function Profile(
