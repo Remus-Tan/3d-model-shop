@@ -8,7 +8,7 @@ export async function GET(
 ) {
     try {
         console.log(`|====================================================================|`);
-        console.log(`| Trying to GET ${params.id} ~`);
+        console.log(`| [users] GET ${params.id} ~`);
         console.log(`|====================================================================|`);
         const result = await db.user.findUniqueOrThrow({ where: { id: params.id } });
         return NextResponse.json(result);
@@ -30,7 +30,7 @@ export async function POST(
     try {
         const data = await req.json();
         console.log(`|====================================================================|`);
-        console.log(`|Trying to POST ${JSON.stringify(data)} ~`);
+        console.log(`| [users] POST ${JSON.stringify(data)} ~`);
         console.log(`|====================================================================|`);
 
         const user = await db.user.create({

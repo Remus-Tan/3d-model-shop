@@ -6,10 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { useClerk } from "@clerk/clerk-react";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import { useToast } from "../ui/use-toast";
 import { Skeleton } from "../ui/skeleton";
@@ -54,7 +53,7 @@ export default function Topbar() {
                 {!loading && (
                     <div className="gap-4 flex items-center ml-auto">
                         {isSignedIn && <UploadButton />}
-                        <ModeToggle />
+                        {/* <ModeToggle /> */}
                         {isSignedIn && <UserDropdown />}
                         {!isSignedIn && <LogInDropdown />}
                     </div>

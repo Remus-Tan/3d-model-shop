@@ -22,8 +22,6 @@ export default function Onboard() {
 
         fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user?.id}`)
             .then((res) => {
-                console.log(res);
-
                 if (freshlyOnboarded) {
                     setLoading(false);
                 }
@@ -46,7 +44,9 @@ export default function Onboard() {
                             firstName: user.firstName,
                             lastName: user.lastName || "",
                             handle: user.id,
-                            imageUrl: user.imageUrl
+                            imageUrl: user.imageUrl,
+                            skills: [],
+                            externalUrls: []
                         })
                     }).then((res) => setOnboard(true));
                 }

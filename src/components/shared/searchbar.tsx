@@ -17,6 +17,7 @@ export default function Searchbar() {
                     "
                 placeholder="Search"
                 type="search"
+                onChange={e => console.log(e)}
             />
             <Button className="
                 rounded-none rounded-r-md border-r border-b border-t transition-none border-border

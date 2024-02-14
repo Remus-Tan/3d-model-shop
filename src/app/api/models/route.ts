@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
-import { Submission } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -10,13 +9,14 @@ export async function POST(
         console.log(`|====================================================================|`);
         console.log(`| Trying to POST new model entry`);
         console.log(`|====================================================================|`);
-        const submission = await db.submission.create({
+        const model = await db.model.create({
             data: await req.json()
         });
 
-        return NextResponse.json(submission);
+        return NextResponse.json(model);
     } catch (error) {
         console.log("[Submission POST] Error: ", error);
+        return NextResponse.json({error: "Internal Error"}, {status: 500});
     }
 }
 
@@ -29,7 +29,7 @@ export async function PATCH(
         console.log(`| Trying to PATCH ${JSON.stringify(data)}`);
         console.log(`|====================================================================|`);
 
-        const submission = await db.submission.update({
+        const model = await db.model.update({
             where: {
                 id: data.id
             },
@@ -38,7 +38,7 @@ export async function PATCH(
             }
         });
 
-        return NextResponse.json(submission);
+        return NextResponse.json(model);
     } catch (error) {
         console.log("[Submission PATCH] Error: ", error);
         return NextResponse.json({error: "Internal Error"}, {status: 500});

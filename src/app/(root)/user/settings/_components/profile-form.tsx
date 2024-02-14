@@ -12,9 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, Loader2, Trash2, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { setRef } from "@mui/material";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     firstName: z.string()
@@ -42,6 +41,9 @@ const formSchema = z.object({
         z.object({
             url: z.string().url("Please enter a URL.")
         })
+    ).optional(),
+    skills: z.array(
+        z.string()
     ).optional()
 });
 
@@ -60,10 +62,15 @@ function LoadForm() {
     );
 }
 
+const skills = ["3D-Coat", "3ds Max", "AutoCAD", "Blender", "Cinema 4D",
+    "GIMP", "Houdini", "Lightwave 3D", "Maya", "Modo", "Mudbox", "Photogrammetry", 
+    "Photoshop", "Revit", "Rhino", "Sculptris", "SketchUp", "Softimage", "SolidWorks",
+    "Substance", "Unity", "Unreal", "Vray", "ZBrush"
+];
+
 export default function ProfileForm() {
     const { userId } = useAuth();
     const [user, setUser] = useState();
-    const router = useRouter();
     const { toast } = useToast();
     const [isFetchingHandle, setFetchingHandle] = useState(false);
     const [hasFetchedHandle, setFetchedHandle] = useState(false);
@@ -75,10 +82,9 @@ export default function ProfileForm() {
             fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/users/${userId}`)
                 .then(res => res.json())
                 .then(data => {
-                    // Remove external URLs field to match default values against default form values
-                    if (data.externalUrls === null) {
-                        delete data.externalUrls;
-                    }
+                    // For new users, replace this array with many "" values instead of initial value to properly make the form changed check work
+                    if (data.skills.length == 0) { data.skills = Array(skills.length).fill(""); }
+                    
                     setUser(data);
                     form.reset(data);
                     setRefresh(false);
@@ -94,6 +100,11 @@ export default function ProfileForm() {
 
     const { fields, append, remove } = useFieldArray({
         name: "externalUrls",
+        control: form.control
+    });
+
+    const skillsArray = useFieldArray({
+        name: "skills",
         control: form.control
     });
 
@@ -308,7 +319,7 @@ export default function ProfileForm() {
                                                     <FormControl>
                                                         <Input placeholder="URL" {...field} />
                                                     </FormControl>
-                                                    <Button onClick={() => { remove(index); }}><Trash2 width={18} /></Button>
+                                                    <Button onClick={() => { remove(index);}}><Trash2 width={18} /></Button>
                                                 </div>
                                                 <FormMessage />
                                             </FormItem>
@@ -321,6 +332,40 @@ export default function ProfileForm() {
                                     Add External URL
                                 </Button>
                             </div>
+
+                            <div className="space-y-2">
+                                <FormLabel>Skills</FormLabel>
+                                <FormDescription>Display your skills on your profile.</FormDescription>
+                                <div className="flex flex-wrap gap-2">
+                                    {skills.map((skill, index) => (
+                                        <FormField
+                                            control={form.control}
+                                            key={skill}
+                                            name={`skills.${index}`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <div className="flex gap-2">
+                                                        <FormControl>
+                                                            <Button
+                                                                type="button"
+                                                                onClick={() => { field.onChange(field.value == "" ? skill : ""); }}
+                                                                className={cn(
+                                                                    "rounded-md font-extralight text-foreground bg-muted transition-none hover:bg-muted-foreground hover:text-background",
+                                                                    form.getValues("skills")[index] != "" && "text-background bg-muted-foreground")}
+                                                            >
+                                                                {skill}
+                                                            </Button>
+                                                        </FormControl>
+                                                    </div>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+
                             <div className="flex gap-2 *:flex-grow">
                                 <Button
                                     type="button"
@@ -349,7 +394,7 @@ export default function ProfileForm() {
                                     Save
                                 </Button>
                                 {(!form.formState.isValid)}
-                                {/* I don't know why but I have to "call" this property in order to make the damn save button reflect the first change */}
+                                {/* I don't know why but I have to render this property in order to make the damn save button reflect the first change but it works so I'm leaving it in */}
                             </div>
                         </form>
                     </Form >

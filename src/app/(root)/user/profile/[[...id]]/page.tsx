@@ -3,31 +3,10 @@ import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import { Badge } from "@/components/ui/badge";
 import { Metadata, ResolvingMetadata } from "next";
 import { User } from "@prisma/client";
-
-async function getUserProfile(
-    { params }: { params: { id: string } }
-) {
-    const user = await currentUser();
-    const searchId = Object.keys(params).length !== 0 ? params.id : user?.id;
-    const userProfile: User = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/" + searchId, {
-        next: {
-            revalidate: 0
-        }
-    }).then(res => {
-        if (res.ok) {
-            return res.json();
-        } else {
-            return;
-        }
-    });
-
-    return userProfile;
-}
+import FollowButton from "./_components/followButton";
 
 export async function generateMetadata(
     { params }: { params: { id: string } },
@@ -45,10 +24,61 @@ export async function generateMetadata(
     };
 }
 
+async function getUserProfile(
+    { params }: { params: { id: string } }
+) {
+    const user = await currentUser();
+
+    const hasParams = Object.keys(params).length !== 0;
+    const searchId = hasParams ? params.id : user?.id;
+
+    const apiRoute = process.env.NEXT_PUBLIC_BASE_URL + (hasParams ? "/api/users/handle/" : "/api/users/");
+    const userProfile: User = await fetch(apiRoute + searchId, {
+        next: {
+            revalidate: 0
+        }
+    }).then(res => {
+        if (res.ok) {
+            return res.json();
+        } else {
+            return;
+        }
+    });
+
+    return userProfile;
+}
+
+// This function retrieves the count of users following / being followed by the profile that is currently being viewed
+// 
+async function getFollowData(userId: string) {
+    const followData = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/follow-data/" + userId, {
+        next: {
+            revalidate: 0
+        }
+    }).then((res) => {
+        if (res.ok) {
+            return res.json();
+        } else {
+            return;
+        }
+    });
+
+    return followData;
+}
+
+async function getModelsData(
+    { params }: { params: { id: string } },
+
+) {
+    const modelsData = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/model-data/" + get)
+}
+
 export default async function Profile(
     { params }: { params: { id: string } }
 ) {
     const user = await getUserProfile({ params });
+    const followData = await getFollowData(user.id);
+
     if (!user) {
         return (
             <h1 className="border-2 bg-secondary text-foreground w-fit m-auto mt-12 p-8 font-semibold">
@@ -57,12 +87,13 @@ export default async function Profile(
         );
     }
 
-    const { id, email, emailPublic, firstName, lastName, handle, headline, aboutMe, imageUrl } = await getUserProfile({ params });
+    const loggedInUser = await currentUser();
+    const { id, email, emailPublic, firstName, lastName, handle, headline, aboutMe, imageUrl, externalUrls, skills } = await getUserProfile({ params });
 
     return (<>
         <ProfileBanner className="bg-zinc-700 dark:bg-zinc-900 px-[12vw]" />
         <Profile className="mt-6 px-[12vw]" />
-        </>);
+    </>);
 
     function ProfileBanner({ className }: React.HTMLAttributes<HTMLElement>) {
         return (
@@ -78,9 +109,13 @@ export default async function Profile(
 
                         <p className="text-md mt-auto">{headline}</p>
 
-                        <div className="flex text-sm mt-auto gap-4">
-                            <Link href={"/"}>{1} <span className="font-extralight"> Followers</span></Link>
-                            <Link href={"/"}>{1} <span className="font-extralight"> Following</span></Link>
+                        <div className="flex text-sm mt-auto gap-4 items-center">
+                            <Link href={"/"}>{followData.followerCount} <span className="font-extralight"> Followers</span></Link>
+                            <Link href={"/"}>{followData.followingCount} <span className="font-extralight"> Following</span></Link>
+                            {
+                                (loggedInUser && loggedInUser?.id != id) &&
+                                <FollowButton loggedInUser={loggedInUser!.id} targetUser={id} />
+                            }
                         </div>
                     </div>
 
@@ -99,11 +134,14 @@ export default async function Profile(
                             <TabsTrigger value="models">Models</TabsTrigger>
                             <TabsTrigger value="likes">Likes</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="profile" className="mt-4 space-y-6">
-                            <ProfileCard />
-                            <StatsCard />
+                        <TabsContent value="profile" className="flex mt-4 gap-6">
+                            <div className="space-y-6">
+                                <ProfileCard />
+                                {skills.some(skill => skill !== "") && <StatsCard />}
+                            </div>
+                            <Spotlight />
                         </TabsContent>
-                        <TabsContent value="models">
+                        <TabsContent value="models" className="m-auto">
                             <ModelsCard />
                         </TabsContent>
                         <TabsContent value="likes">
@@ -117,32 +155,38 @@ export default async function Profile(
 
     function ProfileCard() {
         return (
-            <Card className="w-fit border-border shadow-md">
+            <Card className="border-border shadow-md">
                 <CardHeader>
                     <CardTitle>About Me</CardTitle>
-                    <CardDescription className="text-md">{aboutMe}</CardDescription>
+                    <CardDescription className="text-md whitespace-pre-line">{aboutMe ? aboutMe : "Nothing here... yet!"}</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <ul>
-                        <li>
-                            <a target="_blank" href="https://twitter.com/" rel="noopener noreferrer" className="align-middle underline hover:text-primary">
-                                <LinkedInIcon fontSize="small" />
-                                My Linked In
-                            </a>
-                        </li>
-                        <li>
-                            <a target="_blank" href="https://twitter.com/" rel="noopener noreferrer" className="align-middle underline hover:text-primary">
-                                <TwitterIcon fontSize="small" />
-                                Twit twit
-                            </a>
-                        </li>
-                    </ul>
-                </CardContent>
+                {emailPublic && (
+                    <CardContent>
+                        <CardDescription className="text-md flex gap-2">Email</CardDescription>
+
+                        <a href={`mailto:${email}`} className="underline">{email}</a>
+                    </CardContent>
+                )}
+                {externalUrls.length != 0 && (
+                    <CardContent>
+                        <CardDescription className="text-md flex gap-2">Links</CardDescription>
+
+                        <ul>
+                            {externalUrls.map(({ url }) => (
+                                <li key={url}>
+                                    <a target="_blank" href={url} rel="noopener noreferrer" className="align-middle underline hover:text-primary">
+                                        {url}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                )}
             </Card>
         );
     }
 
-    function StatsCard() {
+    function LikesCard() {
         return (
             <Card className="w-fit border-border shadow-md">
                 <CardHeader>
@@ -150,6 +194,7 @@ export default async function Profile(
                     <CardDescription className="text-md"></CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
+                    { }
                     <Badge>Blender</Badge>
                     <Badge>Photoshop</Badge>
                 </CardContent>
@@ -159,33 +204,44 @@ export default async function Profile(
 
     function ModelsCard() {
         return (
-            <Card className="w-fit">
+            <Card className="w-fit border-border shadow-md">
                 <CardHeader>
-                    <CardTitle>Skills</CardTitle>
-                    <CardDescription className="text-md"></CardDescription>
+                    <CardDescription className="text-md">Nothing here... yet!</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                    <Badge>Blender</Badge>
-                    <Badge>Photoshop</Badge>
-                </CardContent>
+                {/* <CardContent>
+                </CardContent> */}
             </Card>
         );
     }
 
-    function LikesCard() {
+    function StatsCard() {
         return (
-            <Card className="w-fit">
+            <Card className="border-border shadow-md">
                 <CardHeader>
                     <CardTitle>Skills</CardTitle>
                     <CardDescription className="text-md"></CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
-                    <Badge>Blender</Badge>
-                    <Badge>Photoshop</Badge>
+                    {skills.map((skill) => {
+                        if (skill != "") return <Badge key={skill}>{skill}</Badge>;
+                    })}
                 </CardContent>
             </Card>
         );
     }
 
+    function Spotlight() {
+        return (
+            <Card className="w-fit border-border shadow-md">
+                <CardHeader>
+                    <CardTitle>Spotlight</CardTitle>
+                    <CardDescription className="text-md">Nothing here... yet!</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                    <div className="w-[1000px] h-64"></div>
+                </CardContent>
+            </Card>
+        );
+    }
 
 }
