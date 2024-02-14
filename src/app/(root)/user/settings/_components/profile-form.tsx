@@ -104,6 +104,7 @@ export default function ProfileForm() {
     });
 
     const skillsArray = useFieldArray({
+        // @ts-ignore 
         name: "skills",
         control: form.control
     });
@@ -186,7 +187,7 @@ export default function ProfileForm() {
                                                 disabled={
                                                     isFetchingHandle || hasFetchedHandle ||
                                                     form.formState.defaultValues?.handle == form.getValues("handle") ||
-                                                    form.formState.errors.handle
+                                                    form.formState.errors.handle !== undefined
                                                 }
                                                 onClick={fetchHandle}>Check Availability
                                             </Button>
@@ -341,7 +342,7 @@ export default function ProfileForm() {
                                         <FormField
                                             control={form.control}
                                             key={skill}
-                                            name={`skills.${index}`}
+                                            name={`skills.${index}` as const}
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <div className="flex gap-2">
@@ -351,7 +352,7 @@ export default function ProfileForm() {
                                                                 onClick={() => { field.onChange(field.value == "" ? skill : ""); }}
                                                                 className={cn(
                                                                     "rounded-md font-extralight text-foreground bg-muted transition-none hover:bg-muted-foreground hover:text-background",
-                                                                    form.getValues("skills")[index] != "" && "text-background bg-muted-foreground")}
+                                                                    form.getValues("skills")![index] != "" && "text-background bg-muted-foreground")}
                                                             >
                                                                 {skill}
                                                             </Button>
