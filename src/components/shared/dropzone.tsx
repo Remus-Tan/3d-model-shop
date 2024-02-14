@@ -5,14 +5,13 @@ import { useUser } from '@clerk/clerk-react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { Download, FileBox, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import DropzoneComponent, { useDropzone } from 'react-dropzone';
-import { Skeleton } from '../ui/skeleton';
+import { useDropzone } from 'react-dropzone';
 import { storage } from '@/firebase';
-import { Submission } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { toast } from '../ui/use-toast';
 import Link from 'next/link';
 import { Button } from '../ui/button';
+import { Model } from '@prisma/client';
 
 export default function Dropzone() {
     const [loading, setLoading] = useState(false);
@@ -44,7 +43,7 @@ export default function Dropzone() {
             })
         });
 
-        const dbRefObject: Submission = await dbRef.json();
+        const dbRefObject: Model = await dbRef.json();
         const modelRef = ref(storage, `models/${dbRefObject.id}`);
 
         uploadBytes(modelRef, selectedFile).then(async (snapshot) => {
@@ -60,7 +59,7 @@ export default function Dropzone() {
         });
 
         toast({
-            title: "Submission created!"
+            title: "Model created!"
         });
 
         router.push(`/models/${dbRefObject.id}/settings`);
@@ -119,7 +118,7 @@ export default function Dropzone() {
                             isDragActive ? "text-stone-500" :
                                 loading ? "text-white" :
                                     ""
-                        }>We only support .glb and .gltf files up to 2MB. Don't upload anything else!</span>
+                        }>We only support .glb and .gltf files up to 2MB. Don&apos;t upload anything else!</span>
                     </div>
                 </>
             </div>
