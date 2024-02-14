@@ -2,6 +2,15 @@
 const nextConfig = {
     headers: () => [
       {
+        source: '/user/profile',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store',
+          },
+        ],
+      },
+      {
         source: '/user/profile/:id*',
         headers: [
           {

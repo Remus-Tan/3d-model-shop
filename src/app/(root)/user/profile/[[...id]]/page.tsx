@@ -137,7 +137,7 @@ export default async function Profile(
                         <TabsContent value="profile" className="flex mt-4 gap-6">
                             <div className="space-y-6">
                                 <ProfileCard />
-                                {skills.some(skill => skill !== "") && <StatsCard />}
+                                {(skills as []).some(skill => skill !== "") && <StatsCard />}
                             </div>
                             <Spotlight />
                         </TabsContent>
@@ -167,12 +167,12 @@ export default async function Profile(
                         <a href={`mailto:${email}`} className="underline">{email}</a>
                     </CardContent>
                 )}
-                {externalUrls.length != 0 && (
+                {(externalUrls as []).length != 0 && (
                     <CardContent>
                         <CardDescription className="text-md flex gap-2">Links</CardDescription>
 
                         <ul>
-                            {externalUrls.map(({ url }) => (
+                            {(externalUrls as []).map(({ url }: { url: string }) => (
                                 <li key={url}>
                                     <a target="_blank" href={url} rel="noopener noreferrer" className="align-middle underline hover:text-primary">
                                         {url}
@@ -222,7 +222,7 @@ export default async function Profile(
                     <CardDescription className="text-md"></CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
-                    {skills.map((skill) => {
+                    {(skills as []).map((skill) => {
                         if (skill != "") return <Badge key={skill}>{skill}</Badge>;
                     })}
                 </CardContent>
