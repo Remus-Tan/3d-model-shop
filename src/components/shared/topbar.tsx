@@ -16,7 +16,6 @@ import { Button } from "../ui/button";
 
 import { ChevronDown } from "lucide-react";
 
-import ModeToggle from "./mode-toggle";
 import Searchbar from "./searchbar";
 
 export default function Topbar() {
