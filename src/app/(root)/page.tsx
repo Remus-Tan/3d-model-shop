@@ -1,10 +1,7 @@
-import Topbar from '@/components/shared/topbar';
-import { SignIn } from '@clerk/nextjs';
-import Image from 'next/image';
-
 export default function Home() {
   return (
     <>
+    <div className="w-[500px] h-[500px] bg-pink-300"></div>
       <p>
         <br />home
         <br />home
@@ -64,5 +61,5 @@ export default function Home() {
         <br />home
       </p>
     </>
-  )
+  );
 }
