@@ -17,6 +17,7 @@ import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
 
 import Searchbar from "./searchbar";
+import { revalidatePath } from "next/cache";
 
 export default function Topbar() {
     const { isLoaded, isSignedIn, user } = useUser();
@@ -26,7 +27,7 @@ export default function Topbar() {
     const router = useRouter();
     const pathname = usePathname();
 
-    const isSettings = pathname === "/user/settings";
+    const isSettings = ["/user/settings/profile"].includes(pathname);
     const logoType = isSettings ? "settings" : "regular";
 
     useEffect(() => {
@@ -37,8 +38,8 @@ export default function Topbar() {
     }, [isLoaded]);
 
     return (
-        <nav className="sticky top-0 left-0 right-0 shadow-sm backdrop-blur-md">
-            <div className="max-w-[2000px] flex items-center pl-10 pr-10 p-2 h-18 z-50 gap-4 m-auto">
+        <nav className="sticky top-0 left-0 right-0 shadow-sm bg-background z-50">
+            <div className="max-w-[2000px] flex items-center pl-10 pr-10 p-2 gap-4 m-auto">
                 <Logo type={logoType} />
                 {!isSettings && <Searchbar />}
 
@@ -78,10 +79,10 @@ export default function Topbar() {
                     src="/logo.svg"
                     width={0}
                     height={0}
-                    className="w-full h-auto"
+                    className="w-10"
                 />
-                <p className="text-foreground font-semibold">
-                    {type === "regular" && <>3D Shop</>}
+                <p className="text-foreground text-xl font-semibold">
+                    {type === "regular" && <>Blendy</>}
                     {type === "settings" && <>Back to Profile</>}
                 </p>
             </Link>
@@ -109,7 +110,7 @@ export default function Topbar() {
                     <ChevronDown width={12} stroke={hover ? "orange" : "grey"} className="dark:outline" />
                 </HoverCardTrigger>
                 <HoverCardContent className="p-0 pt-2 pb-2 w-32 dark:bg-zinc-700 border-border">
-                    <Link href="/user/profile">
+                    <Link href="/user/profile" onClick={() => { revalidatePath('/user/profile'); }}>
                         <div className={hoverCardClass}>
                             Profile
                         </div>
@@ -117,12 +118,12 @@ export default function Topbar() {
 
                     <hr className="my-2" />
 
-                    <Link href="/modelview">
+                    <Link href={"/user/profile?tab=models"} onClick={() => { revalidatePath('/user/profile?tab=models'); }}>
                         <div className={hoverCardClass}>
                             Models
                         </div>
                     </Link>
-                    <Link href="/">
+                    <Link href={"/user/profile?tab=likes"} onClick={() => { revalidatePath('/user/profile?tab=likes'); }}>
                         <div className={hoverCardClass}>
                             Likes
                         </div>
@@ -157,7 +158,7 @@ export default function Topbar() {
 
     function LogInDropdown() {
         return (
-            <SignInButton mode="modal">
+            <SignInButton>
                 <Button variant={"ghost"}>
                     Log in
                 </Button>

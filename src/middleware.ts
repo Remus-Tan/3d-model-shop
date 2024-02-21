@@ -8,7 +8,7 @@ export default authMiddleware({
     "/",
     "/user/profile/:id"
   ],
-  ignoredRoutes: ['/api/(.*)'],
+  ignoredRoutes: ['/api/(.*)', '/models/(.*)'],
 });
 
 export const config = {
