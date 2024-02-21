@@ -1,12 +1,13 @@
 import { currentUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Metadata, ResolvingMetadata } from "next";
-import { User } from "@prisma/client";
+import { Likes, Model, User } from "@prisma/client";
 import FollowButton from "./_components/followButton";
+import { Settings } from "lucide-react";
 
 export async function generateMetadata(
     { params }: { params: { id: string } },
@@ -66,15 +67,13 @@ async function getFollowData(userId: string) {
     return followData;
 }
 
-async function getModelsData(
-    { params }: { params: { id: string } },
-
-) {
-    // const modelsData = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/model-data/" + get)
+export default async function Profile({
+    params,
+    searchParams
+}: {
+    params: { id: string },
+    searchParams: { tab: string }
 }
-
-export default async function Profile(
-    { params }: { params: { id: string } }
 ) {
     const user = await getUserProfile({ params });
     const followData = await getFollowData(user.id);
@@ -90,9 +89,14 @@ export default async function Profile(
     const loggedInUser = await currentUser();
     const { id, email, emailPublic, firstName, lastName, handle, headline, aboutMe, imageUrl, externalUrls, skills } = await getUserProfile({ params });
 
+    const profileProps = {
+        className: "mt-6 px-[12vw]",
+        searchParams
+    };
+
     return (<>
         <ProfileBanner className="bg-zinc-700 dark:bg-zinc-900 px-[12vw]" />
-        <Profile className="mt-6 px-[12vw]" />
+        <Profile {...profileProps} />
     </>);
 
     function ProfileBanner({ className }: React.HTMLAttributes<HTMLElement>) {
@@ -124,27 +128,32 @@ export default async function Profile(
         );
     }
 
-    function Profile({ className }: React.HTMLAttributes<HTMLElement>) {
+    function Profile({
+        className,
+        searchParams
+    }: {
+        className: React.HTMLAttributes<HTMLElement>,
+        searchParams: { tab: string }
+    }) {
         return (
-            <div className={className}>
+            <div className={className as string}>
                 <div className="max-w-[2000px] m-auto ">
-                    <Tabs defaultValue="profile" className="flex flex-col">
+                    <Tabs defaultValue={Object.keys(searchParams).length !== 0 ? searchParams.tab : "profile"} className="flex flex-col">
                         <TabsList className="self-center">
                             <TabsTrigger value="profile">Profile</TabsTrigger>
                             <TabsTrigger value="models">Models</TabsTrigger>
                             <TabsTrigger value="likes">Likes</TabsTrigger>
                         </TabsList>
                         <TabsContent value="profile" className="flex mt-4 gap-6">
-                            <div className="space-y-6">
+                            <div className="m-auto flex flex-col space-y-6">
                                 <ProfileCard />
                                 {(skills as []).some(skill => skill !== "") && <StatsCard />}
                             </div>
-                            <Spotlight />
                         </TabsContent>
                         <TabsContent value="models" className="m-auto">
                             <ModelsCard />
                         </TabsContent>
-                        <TabsContent value="likes">
+                        <TabsContent value="likes" className="m-auto">
                             <LikesCard />
                         </TabsContent>
                     </Tabs>
@@ -186,31 +195,100 @@ export default async function Profile(
         );
     }
 
-    function LikesCard() {
+    async function LikesCard() {
+        const likes: [Likes] = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/models/like-data/" + user.id, {
+            next: { revalidate: 0 }
+        })
+            .then(res => res.json());
+
+        var likesArray: Model[] = [];
+
+        for (let i = 0; i < likes.length; i++) {
+            console.log("looping! " + i);
+            await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/models/" + likes[i].modelId, {
+                next: { revalidate: 0 }
+            })
+                .then(async res => {
+                    const model = await res.json();
+                    likesArray.push(model);
+                });
+        };
+
         return (
-            <Card className="w-fit border-border shadow-md">
-                <CardHeader>
-                    <CardTitle>Skills</CardTitle>
-                    <CardDescription className="text-md"></CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                    { }
-                    <Badge>Blender</Badge>
-                    <Badge>Photoshop</Badge>
-                </CardContent>
-            </Card>
+            <div className="flex flex-wrap gap-8 justify-center">
+                {
+                    likesArray.length === 0 &&
+                    <Card className="w-fit border-border shadow-md">
+                        <CardHeader>
+                            <CardDescription className="text-md">Nothing here... yet!</CardDescription>
+                        </CardHeader>
+                    </Card>
+                }
+                {
+                    likesArray.length !== 0 &&
+                    likesArray.map((model: Model) => (
+                        <Card className="w-fit rounded-none shadow-md transition-all hover:scale-105 ease-out" key={model.id}>
+                            <CardContent className="p-0">
+                                <a href={`/models/${model.id}`}>
+                                    <div className="w-96 h-64 bg-red-200">
+                                        Placeholder thumbnail
+                                    </div>
+                                </a >
+                            </CardContent>
+                            <CardFooter className="p-2 pl-4 flex">
+                                {model.name ? model.name : "Unnamed Model"}
+                            </CardFooter>
+                        </Card >
+                    ))
+                }
+            </div>
         );
     }
 
-    function ModelsCard() {
+    async function ModelsCard() {
+        const results = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/models/user/" + user.id, {
+            next: {
+                revalidate: 0
+            }
+        })
+            .then(res => res.json());
+
         return (
-            <Card className="w-fit border-border shadow-md">
-                <CardHeader>
-                    <CardDescription className="text-md">Nothing here... yet!</CardDescription>
-                </CardHeader>
-                {/* <CardContent>
-                </CardContent> */}
-            </Card>
+            <div className="flex flex-wrap gap-8 justify-center">
+                {
+                    results.length === 0 &&
+                    <Card className="w-fit border-border shadow-md">
+                        <CardHeader>
+                            <CardDescription className="text-md">Nothing here... yet!</CardDescription>
+                        </CardHeader>
+                    </Card>
+                }
+                {
+                    results.length !== 0 &&
+                    results.map((model: Model) => (
+                        <Card className="w-fit rounded-none shadow-md transition-all hover:scale-105 ease-out" key={model.id}>
+                            <CardContent className="p-0">
+                                <a href={`/models/${model.id}`}>
+                                    <div className="w-96 h-64 bg-red-200">
+                                        Placeholder thumbnail
+                                    </div>
+                                </a >
+                            </CardContent>
+                            <CardFooter className="p-2 pl-4 flex">
+                                {model.name ? model.name : "Unnamed Model"}
+                                {// @ts-ignore becaused loggedInUser.id may be possibly null and I don't care but typescript is annoying
+                                    model.creatorId != loggedInUser.id &&
+                                    <a
+                                        href={`/models/${model.id}/settings`}
+                                        className="ml-auto hover:animate-spin duration-1000 ease-out">
+                                        <Settings />
+                                    </a>
+                                }
+                            </CardFooter>
+                        </Card >
+                    ))
+                }
+            </div>
         );
     }
 
@@ -221,27 +299,12 @@ export default async function Profile(
                     <CardTitle>Skills</CardTitle>
                     <CardDescription className="text-md"></CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
+                <CardContent className="flex flex-wrap gap-2 max-w-xl">
                     {(skills as []).map((skill) => {
                         if (skill != "") return <Badge key={skill}>{skill}</Badge>;
                     })}
                 </CardContent>
             </Card>
         );
-    }
-
-    function Spotlight() {
-        return (
-            <Card className="w-fit border-border shadow-md">
-                <CardHeader>
-                    <CardTitle>Spotlight</CardTitle>
-                    <CardDescription className="text-md">Nothing here... yet!</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                    <div className="w-[1000px] h-64"></div>
-                </CardContent>
-            </Card>
-        );
-    }
-
-}
+    };
+};
