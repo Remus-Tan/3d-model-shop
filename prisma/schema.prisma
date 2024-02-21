@@ -68,8 +68,8 @@ model Likes {
   modelId Int    @map("model_id")
 
   @@id([userId, modelId])
-  @@index([modelId])
   @@index([userId])
+  @@index([modelId])
 }
 
 // model Comment {

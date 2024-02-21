@@ -144,7 +144,7 @@ export async function DELETE(
         if (liker && model) {
             const result = await db.likes.delete({
                 where: {
-                    modelId_userId: {
+                    userId_modelId: {
                         userId: params.id,
                         modelId: Number(req.nextUrl.searchParams.get("target"))
                     }
