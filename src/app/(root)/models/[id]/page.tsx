@@ -52,6 +52,7 @@ export default function ModelView(
         });
     }, []);
 
+    // @ts-ignore because model.error will exist if model returns an error, obviously
     if ((Object.keys(model).length === 0 || model.error) && !isLoading) {
         return (
             <h1 className="border-2 bg-secondary text-foreground w-fit m-auto mt-12 p-8 font-semibold">
