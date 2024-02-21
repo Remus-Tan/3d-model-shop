@@ -1,22 +1,26 @@
 "use client";
 
 import { cn } from '@/lib/utils';
+
 import { useUser } from '@clerk/clerk-react';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { Download, FileBox, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { storage } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { toast } from '../ui/use-toast';
-import Link from 'next/link';
-import { Button } from '../ui/button';
+
+import { storage } from '@/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
 import { Model } from '@prisma/client';
+
+import Link from 'next/link';
+
+import { toast } from '../ui/use-toast';
+import { Button } from '../ui/button';
+import { Download, FileBox, Loader2 } from 'lucide-react';
 
 export default function Dropzone() {
     const [loading, setLoading] = useState(false);
-    const [fileLoaded, setFileLoaded] = useState(false);
-    const { isLoaded, isSignedIn, user } = useUser();
+    const { isLoaded, user } = useUser();
     const router = useRouter();
 
     const onDropAccepted = async (files: File[]) => {
@@ -35,7 +39,6 @@ export default function Dropzone() {
     const uploadPost = async (selectedFile: File) => {
         if (!isLoaded) return;
 
-
         const dbRef = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/models`, {
             method: "POST",
             body: JSON.stringify({
@@ -46,20 +49,23 @@ export default function Dropzone() {
         const dbRefObject: Model = await dbRef.json();
         const modelRef = ref(storage, `models/${dbRefObject.id}`);
 
-        uploadBytes(modelRef, selectedFile).then(async (snapshot) => {
+        await uploadBytes(modelRef, selectedFile).then(async (snapshot) => {
             const downloadUrl = await getDownloadURL(modelRef);
 
             await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/models`, {
                 method: "PATCH",
                 body: JSON.stringify({
                     id: dbRefObject.id,
-                    downloadUrl
+                    downloadUrl,
+                    name: "",
+                    description: ""
                 })
             });
         });
 
         toast({
-            title: "Model created!"
+            title: "Model created!",
+            description: "Please wait..."
         });
 
         router.push(`/models/${dbRefObject.id}/settings`);
@@ -118,7 +124,7 @@ export default function Dropzone() {
                             isDragActive ? "text-stone-500" :
                                 loading ? "text-white" :
                                     ""
-                        }>We only support .glb and .gltf files up to 2MB. Don&apos;t upload anything else!</span>
+                        }>We only support .gltf files up to 2MB. Don&apos;t upload anything else!</span>
                     </div>
                 </>
             </div>

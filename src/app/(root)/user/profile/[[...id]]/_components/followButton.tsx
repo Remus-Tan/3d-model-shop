@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 async function updateFollow(
@@ -69,9 +70,9 @@ export default function FollowButton({
 
             {isUpdating &&
                 <Button
-                    className={cn("p-1 h-fit text-sm font-extralight transition-none text-primary")}
+                    className={cn("p-1 h-fit text-sm font-extralight transition-none")}
                     disabled>
-                    {isFollowing ? "Unfollow" : "Follow"}
+                    <Loader2 size={20} className="animate-spin"/>
                 </Button>
             }
         </>

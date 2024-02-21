@@ -18,28 +18,28 @@ import { cn } from "@/lib/utils";
 const formSchema = z.object({
     firstName: z.string()
         .min(1, "Please provide a first name.")
-        .max(30, "Cannot be longer than 30 characters.")
+        .max(30, "Too long!")
         .regex(new RegExp("^(?! )[A-Za-z ]*(?<! )$"), "Name can only contain alphabets and cannot start or end with a space."),
     lastName: z.string()
-        .max(30, "Cannot be longer than 30 characters!")
+        .max(30, "Too long!")
         .regex(new RegExp("^(?! )[A-Za-z ]*(?<! )$"), "Name can only contain alphabets and cannot start or end with a space.")
         .optional(),
     handle: z.string()
         .min(1, "A handle is mandatory.")
-        .max(32, "Cannot be longer than 32 characters.")
+        .max(32, "Too long!")
         .regex(new RegExp("^[a-zA-Z0-9_]*$"),
             "Your handle can only contain alphabets, numbers and underscores."),
     email: z.string(),
     emailPublic: z.boolean(),
     headline: z.string()
-        .max(32, "Cannot be longer than 32 characters.")
+        .max(32, "Too long!")
         .optional(),
     aboutMe: z.string()
-        .max(128, "Cannot be longer than 128 characters.")
+        .max(128, "Too long!")
         .optional(),
     externalUrls: z.array(
         z.object({
-            url: z.string().url("Please enter a URL.")
+            url: z.string().url("Please enter a URL (including http:// in front!).")
         })
     ).optional(),
     skills: z.array(
@@ -182,8 +182,9 @@ export default function ProfileForm() {
                                                 }
                                             />
                                         </FormControl>
-                                        <div className="flex gap-3 items-center">
+                                        <div className="flex gap-3 items-center overflow-hidden">
                                             <Button
+                                            className="-z-1"
                                                 disabled={
                                                     isFetchingHandle || hasFetchedHandle ||
                                                     form.formState.defaultValues?.handle == form.getValues("handle") ||

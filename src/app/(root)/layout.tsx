@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
 import '../globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
-import { ThemeProvider } from '@/components/theme-provider';
 import Topbar from '@/components/shared/topbar';
 import { Toaster } from '@/components/ui/toaster';
+import Footer from '@/components/shared/footer';
 
 export const metadata: Metadata = {
   title: 'Hello friends',
@@ -21,16 +20,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={GeistSans.className}>
         <body className="bg-background">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
           <Topbar />
-          {children}
+          <main className='min-h-[calc(100svh-50px)]'>{children}</main>
+          <Footer />
           <Toaster />
-          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

@@ -46,9 +46,6 @@ export async function GET(
                 where: { followerId: params.id[0] }
             });
 
-            console.log(params.id[0]);
-            console.log(followerCount);
-            console.log(followingCount);
             return NextResponse.json({ followerCount, followingCount }, { status: 200 });
 
         } catch (error) {

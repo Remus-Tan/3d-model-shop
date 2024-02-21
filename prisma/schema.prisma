@@ -26,6 +26,7 @@ model User {
   models       Model[]
   followers    Follows[] @relation("follower")
   following    Follows[] @relation("following")
+  Likes        Likes[]   @relation("user")
 
   // stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
   // stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
@@ -35,7 +36,7 @@ model User {
 
 model Model {
   id          Int     @id @default(autoincrement())
-  title       String?
+  name        String?
   description String?
   creator     User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String  @map("creator_id")
@@ -44,6 +45,7 @@ model Model {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Likes     Likes[]  @relation("model")
 
   @@index([creatorId])
 }
@@ -57,6 +59,17 @@ model Follows {
   @@id([followerId, followingId])
   @@index([followerId])
   @@index([followingId])
+}
+
+model Likes {
+  user    User   @relation("user", fields: [userId], references: [id])
+  userId  String @map("user_id")
+  model   Model  @relation("model", fields: [modelId], references: [id])
+  modelId Int    @map("model_id")
+
+  @@id([userId, modelId])
+  @@index([userId])
+  @@index([modelId])
 }
 
 // model Comment {

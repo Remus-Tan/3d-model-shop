@@ -10,15 +10,19 @@ export async function GET(
         console.log(`|====================================================================|`);
         console.log(`| [handle] GET ${params.handle} ~`);
         console.log(`|====================================================================|`);
-        const result = await db.user.findUniqueOrThrow({ where: { handle: params.handle.toLowerCase() } });
+        const result = await db.user.findUniqueOrThrow({
+            where: {
+                handle: params.handle
+            }
+        });
         return NextResponse.json(result);
     } catch (error) {
         console.log("[User GET]", error);
-        
+
         if (error instanceof PrismaClientKnownRequestError && error.code == 'P2025') {
-            return NextResponse.json({error: "User not found"}, { status: 404 });
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         } else {
-            return NextResponse.json({error: "Internal Error"}, { status: 500 });
+            return NextResponse.json({ error: "Internal Error" }, { status: 500 });
         }
     }
 }
