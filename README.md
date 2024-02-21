@@ -1,8 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Thank you for visiting Blendy!
 
-## Getting Started
+Blendy is a website that runs on Next.js 14.
 
-First, run the development server:
+React + Tailwind 🎨🍃  
+Prisma 🧊  ( Planetscale )  
+Clerk authentication 🐾
+
+You may find the deployed production build by clicking the link in the about section (top-right of this page).
+
+I named it Blendy because Blender is a great software and I don't have any brilliant ideas...
+
+## Hosting your own copy
+
+Fork / clone this repository to your own local environment. Or just download the files.
+
+Then, run the development server (You will need to have Node.js installed of course, this is developed on Node v20.10.0):
 
 ```bash
 npm run dev
@@ -16,9 +28,25 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You will need to create a local .env file with the following variables:
+```ini
+# refer to: https://www.prisma.io/docs/orm/reference/connection-urls
+DATABASE_URL='your_url'
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+# Change this if you want to use a different port
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+
+# Change these two
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=get_this_from_clerk
+CLERK_SECRET_KEY=get_this_from_clerk
+
+# Don't touch
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboard
+```
 
 ## Learn More
 
