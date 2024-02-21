@@ -1,6 +1,6 @@
 ## Thank you for visiting Blendy!
 
-Blendy is a website that runs on Next.js 14.
+Blendy is a website built with Next.js 14.
 
 React + Tailwind 🎨🍃  
 Prisma 🧊  ( Planetscale )  

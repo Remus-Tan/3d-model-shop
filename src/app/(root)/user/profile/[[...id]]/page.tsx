@@ -132,11 +132,11 @@ export default async function Profile({
         className,
         searchParams
     }: {
-        className: React.HTMLAttributes<HTMLElement>,
+        className: string,
         searchParams: { tab: string }
     }) {
         return (
-            <div className={className as string}>
+            <div className={className}>
                 <div className="max-w-[2000px] m-auto ">
                     <Tabs defaultValue={Object.keys(searchParams).length !== 0 ? searchParams.tab : "profile"} className="flex flex-col">
                         <TabsList className="self-center">
