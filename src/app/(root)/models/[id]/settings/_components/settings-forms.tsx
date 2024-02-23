@@ -19,10 +19,11 @@ import { revalidatePath } from "next/cache";
 
 const formSchema = z.object({
     name: z.string()
+        .trim()
         .min(1, "Please provide a name.")
-        .max(40, "Too long!")
-        .regex(new RegExp("^(?! ).*(?<! )$"), "Cannot start or end with a space."),
+        .max(40, "Too long!"),
     description: z.string()
+        .trim()
         .min(1, "Please provide a description.")
         .max(255, "Too long!"),
     published: z.boolean()
@@ -217,7 +218,6 @@ export default function SettingsForm({
 const deleteModel = async (modelId: string, router: AppRouterInstance) => {
     await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/models/${modelId}`, { method: "DELETE" })
         .then((res) => {
-            console.log(JSON.stringify(res));
             toast({
                 title: "Model deleted!",
                 description: "Redirecting..."

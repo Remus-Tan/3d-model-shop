@@ -103,7 +103,7 @@ export default async function Profile({
         return (
             <div className={className}>
                 <div className="max-w-[2000px] m-auto flex py-8 text-white">
-                    <Image src={imageUrl} alt="Profile picture" width="110" height="110" className="border border-border shadow-md rounded-sm" />
+                    <Image src={imageUrl || ""} alt="Profile picture" width="110" height="110" className="border border-border shadow-md rounded-sm" />
 
                     <div className="ml-5 flex flex-col">
                         <div className="flex mt-1 items-baseline">
@@ -204,7 +204,6 @@ export default async function Profile({
         var likesArray: Model[] = [];
 
         for (let i = 0; i < likes.length; i++) {
-            console.log("looping! " + i);
             await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/models/" + likes[i].modelId, {
                 next: { revalidate: 0 }
             })

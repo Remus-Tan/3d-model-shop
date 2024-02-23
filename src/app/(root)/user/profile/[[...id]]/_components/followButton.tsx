@@ -13,13 +13,12 @@ async function updateFollow(
         method: isFollowing ? "Delete" : "Post",
     }).then(async res => {
         res = await res.json();
-        console.log(res);
     });
 }
 
 export default function FollowButton({
     loggedInUser,
-    targetUser
+    targetUser,
 }: {
     loggedInUser: string,
     targetUser: string
@@ -32,18 +31,15 @@ export default function FollowButton({
     useEffect(() => {
         // Find logged in user's following list, then see if target user is already followed
         setIsFetching(true);
-        fetch(apiPath, {
-            next: {
-                revalidate: 0
-            }
-        }).then(res => {
-            setIsFetching(false);
-            if (res.ok) {
-                setIsFollowing(true);
-            } else {
-                setIsFollowing(false);
-            }
-        });
+        fetch(apiPath, { next: { revalidate: 0 } })
+            .then(res => {
+                setIsFetching(false);
+                if (res.ok) {
+                    setIsFollowing(true);
+                } else {
+                    setIsFollowing(false);
+                }
+            });
     }, []);
 
     return (
@@ -72,7 +68,7 @@ export default function FollowButton({
                 <Button
                     className={cn("p-1 h-fit text-sm font-extralight transition-none")}
                     disabled>
-                    <Loader2 size={20} className="animate-spin"/>
+                    <Loader2 size={20} className="animate-spin" />
                 </Button>
             }
         </>

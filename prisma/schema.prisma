@@ -27,6 +27,7 @@ model User {
   followers    Follows[] @relation("follower")
   following    Follows[] @relation("following")
   Likes        Likes[]   @relation("user")
+  Comment      Comment[] @relation("user")
 
   // stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
   // stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
@@ -43,17 +44,18 @@ model Model {
   downloadUrl String? @map("download_url")
   published   Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Likes     Likes[]  @relation("model")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Likes     Likes[]   @relation("model")
+  Comment   Comment[] @relation("model")
 
   @@index([creatorId])
 }
 
 model Follows {
-  follower    User   @relation("follower", fields: [followerId], references: [id])
+  follower    User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String @map("follower_id")
-  following   User   @relation("following", fields: [followingId], references: [id])
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String @map("following_id")
 
   @@id([followerId, followingId])
@@ -62,9 +64,9 @@ model Follows {
 }
 
 model Likes {
-  user    User   @relation("user", fields: [userId], references: [id])
+  user    User   @relation("user", fields: [userId], references: [id], onDelete: Cascade)
   userId  String @map("user_id")
-  model   Model  @relation("model", fields: [modelId], references: [id])
+  model   Model  @relation("model", fields: [modelId], references: [id], onDelete: Cascade)
   modelId Int    @map("model_id")
 
   @@id([userId, modelId])
@@ -72,6 +74,15 @@ model Likes {
   @@index([modelId])
 }
 
-// model Comment {
-//   id
-// }
+model Comment {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation("user", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  model     Model    @relation("model", fields: [modelId], references: [id], onDelete: Cascade)
+  modelId   Int      @map("model_id")
+  createdAt DateTime @default(now())
+  comment   String
+
+  @@index([userId])
+  @@index([modelId])
+}

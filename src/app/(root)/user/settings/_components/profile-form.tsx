@@ -17,12 +17,12 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     firstName: z.string()
+        .trim()
         .min(1, "Please provide a first name.")
-        .max(30, "Too long!")
-        .regex(new RegExp("^(?! )[A-Za-z ]*(?<! )$"), "Name can only contain alphabets and cannot start or end with a space."),
+        .max(30, "Too long!"),
     lastName: z.string()
+        .trim()
         .max(30, "Too long!")
-        .regex(new RegExp("^(?! )[A-Za-z ]*(?<! )$"), "Name can only contain alphabets and cannot start or end with a space.")
         .optional(),
     handle: z.string()
         .min(1, "A handle is mandatory.")
@@ -63,7 +63,7 @@ function LoadForm() {
 }
 
 const skills = ["3D-Coat", "3ds Max", "AutoCAD", "Blender", "Cinema 4D",
-    "GIMP", "Houdini", "Lightwave 3D", "Maya", "Modo", "Mudbox", "Photogrammetry", 
+    "GIMP", "Houdini", "Lightwave 3D", "Maya", "Modo", "Mudbox", "Photogrammetry",
     "Photoshop", "Revit", "Rhino", "Sculptris", "SketchUp", "Softimage", "SolidWorks",
     "Substance", "Unity", "Unreal", "Vray", "ZBrush"
 ];
@@ -84,7 +84,7 @@ export default function ProfileForm() {
                 .then(data => {
                     // For new users, replace this array with many "" values instead of initial value to properly make the form changed check work
                     if (data.skills.length == 0) { data.skills = Array(skills.length).fill(""); }
-                    
+
                     setUser(data);
                     form.reset(data);
                     setRefresh(false);
@@ -184,7 +184,7 @@ export default function ProfileForm() {
                                         </FormControl>
                                         <div className="flex gap-3 items-center overflow-hidden">
                                             <Button
-                                            className="-z-1"
+                                                className="-z-1"
                                                 disabled={
                                                     isFetchingHandle || hasFetchedHandle ||
                                                     form.formState.defaultValues?.handle == form.getValues("handle") ||
@@ -321,7 +321,7 @@ export default function ProfileForm() {
                                                     <FormControl>
                                                         <Input placeholder="URL" {...field} />
                                                     </FormControl>
-                                                    <Button onClick={() => { remove(index);}}><Trash2 width={18} /></Button>
+                                                    <Button onClick={() => { remove(index); }}><Trash2 width={18} /></Button>
                                                 </div>
                                                 <FormMessage />
                                             </FormItem>
@@ -382,7 +382,7 @@ export default function ProfileForm() {
                                     type="submit"
                                     disabled={
                                         // If form values did not change, disable button
-                                        JSON.stringify(form.formState.defaultValues) == JSON.stringify(form.getValues()) ||
+                                        !form.formState.isDirty ||
 
                                         // If form is being submitted / loading / has validation errors, disable button
                                         form.formState.isSubmitting ||

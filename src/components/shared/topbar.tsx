@@ -106,7 +106,7 @@ export default function Topbar() {
         return (
             <HoverCard openDelay={0} closeDelay={30} onOpenChange={(open: boolean) => setHover(open)}>
                 <HoverCardTrigger className="flex items-baseline">
-                    <Image src={user!.imageUrl} alt="Profile picture" width="32" height="32" className="mr-2 rounded-sm" />
+                    <Image src={user!.imageUrl || ""} alt="Profile picture" width="32" height="32" className="mr-2 rounded-sm" />
                     <ChevronDown width={12} stroke={hover ? "orange" : "grey"} className="dark:outline" />
                 </HoverCardTrigger>
                 <HoverCardContent className="p-0 pt-2 pb-2 w-32 dark:bg-zinc-700 border-border">

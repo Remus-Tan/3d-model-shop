@@ -6,14 +6,16 @@ import { CameraControls, Stage } from "@react-three/drei";
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { Loader2 } from "lucide-react";
 
 export default function ModelViewer({
     modelId,
     size
 }: {
     modelId: string,
-    size:   { width: string, height: string }
+    size: { width: string, height: string }
 }) {
+    const [isFetching, setFetching] = useState(true);
     const [modelUrl, setModelUrl] = useState("");
 
     useEffect(() => {
@@ -21,23 +23,36 @@ export default function ModelViewer({
             .then(res => res.json())
             .then(data => {
                 setModelUrl(data.downloadUrl);
+                setFetching(false);
             });
     }, []);
 
+    if (isFetching) return <Loader />;
 
     return (
         <ErrorBoundary fallback={
-            <div className={`flex justify-center items-center text-center border-2 w-${size.width} h-${size.height}`}>Invalid file format found,<br /> please delete this submission and upload a proper .gltf file!</div>
+            <div className={`flex justify-center items-center text-center border-2 w-${size.width} h-${size.height}`}>
+                Invalid file format found,<br /> please delete this submission and upload a proper .gltf file!
+            </div>
         }>
             <div className={`w-${size.width} h-${size.height}`}>
-                <Canvas shadows className="border-2" camera={{ position: [5, 5, 5], fov: 45 }}>
-                    <Suspense fallback={null}>
+                <Suspense fallback={<Loader />}>
+                    <Canvas shadows className="border-2" camera={{ position: [5, 5, 5], fov: 45 }}>
                         <Scene modelUrl={modelUrl} />
-                    </Suspense>
-                </Canvas>
+                    </Canvas>
+                </Suspense>
             </div>
         </ErrorBoundary>
     );
+
+    function Loader() {
+        return (
+            <div className={`flex flex-col justify-center items-center text-center border-2 w-${size.width} h-${size.height}`}>
+                <Loader2 className="animate-spin rounded-full bg-background" size={160} strokeWidth="1" color="orange" />
+                Loading...!
+            </div>
+        );
+    }
 }
 
 function Scene({ modelUrl }: { modelUrl: string }) {
@@ -59,4 +74,4 @@ function Scene({ modelUrl }: { modelUrl: string }) {
             <CameraControls />
         </>
     );
-}
+};
