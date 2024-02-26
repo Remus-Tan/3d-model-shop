@@ -72,7 +72,7 @@ export default function Onboard() {
             {!loading && (
                 <>
                     <Image src={user!.imageUrl || ""} alt="Profile picture" width={64} height={64} className="rounded-full self-center" />
-                    <h1 className="text-4xl font-medium self-center">Welcome to 3D Shop! 😇</h1>
+                    <h1 className="text-4xl font-medium self-center">😇 Welcome to Blendy! 📦</h1>
 
                     <p>Would you like to set up your profile now?</p>
 

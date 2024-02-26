@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 import Footer from '@/components/shared/footer';
 
 export const metadata: Metadata = {
-  title: 'Hello friends',
-  description: 'Welcome',
+  title: 'Blendy',
+  description: 'This is Blendy',
 };
 
 export default function RootLayout({

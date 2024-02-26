@@ -16,6 +16,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useRouter } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 const formSchema = z.object({
     name: z.string()
@@ -33,34 +34,28 @@ type formValues = z.infer<typeof formSchema>;
 
 function LoadForm() {
     return (
-        <>
+        <div className="ml-2 flex flex-col gap-2">
+            <Skeleton className="w-8 h-6 rounded-full" />
+            <Skeleton className="w-[144px] h-8 rounded-full" />
             <Skeleton className="w-20 h-6 rounded-full" />
-            <Skeleton className="w-[144] h-6 rounded-full" />
+            <Skeleton className="w-[144px] h-8 rounded-full" />
             <Skeleton className="w-20 h-6 rounded-full" />
-            <Skeleton className="w-[144] h-6 rounded-full" />
-            <Skeleton className="w-20 h-6 rounded-full" />
-            <Skeleton className="w-[144] h-6 rounded-full" />
-        </>
-    );
-}
-
-function LevaControls() {
-    return (
-        <>
-        </>
+            <Skeleton className="w-[144px] h-32 rounded-md" />
+            <div className="flex mt-32 gap-2">
+                <Skeleton className="w-32 h-12 rounded-md" />
+                <Skeleton className="w-32 h-12 rounded-md" />
+            </div>
+        </div>
     );
 }
 
 export default function SettingsForm({
-    defaultValues,
     modelId
 }: {
-    defaultValues: Model,
     modelId: string
 }) {
     const [settings, setSettings] = useState();
     const { toast } = useToast();
-    const [handleValidity, setHandleValidity] = useState(false);
     const [refresh, setRefresh] = useState(false); // This is to refresh the form value after submitting changes
     const router = useRouter();
     const [isDeleting, setDeleting] = useState(false);
@@ -69,7 +64,10 @@ export default function SettingsForm({
         if (!settings || refresh) {
             fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/models/" + Number(modelId))
                 .then(res => res.json())
-                .then(data => {
+                .then((data) => {
+                    data.name = data.name == null ? "" : data.name;
+                    data.description = data.description == null ? "" : data.description;
+
                     setSettings(data);
                     form.reset(data);
                     setRefresh(false);
@@ -108,7 +106,7 @@ export default function SettingsForm({
             {!settings ?
                 <LoadForm />
                 :
-                <div className="flex flex-1 m-4 gap-4">
+                <div className="flex md:w-96 md:m-4 gap-4">
                     <Form {...form}>
                         <form onSubmit={(form.handleSubmit(onSubmit))} className="flex flex-col w-full gap-8 lg:max-w-2xl">
                             <FormField
@@ -155,7 +153,7 @@ export default function SettingsForm({
                                     </FormItem>
                                 )}
                             />
-                            <div className="flex gap-2 *:flex-grow">
+                            <div className="flex gap-2 *:flex-grow flex-wrap">
                                 <Button
                                     type="button"
                                     variant={"secondary"}
@@ -181,32 +179,39 @@ export default function SettingsForm({
                                 {(!form.formState.isValid)}
                                 {/* I don't know why but I have to render this property in order to make the damn save button reflect the first change but it works so I'm leaving it in */}
                             </div>
-                            <Dialog >
-                                <DialogTrigger className="mt-auto w-fit">
-                                    <Button
-                                        disabled={isDeleting}
-                                        type="button"
-                                        variant={"destructive"}
-                                    >
-                                        Delete Model
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader className="gap-4">
-                                        <DialogTitle>Are you sure?</DialogTitle>
-                                        <DialogDescription className="flex gap-4 *:flex-grow">
-                                            <DialogClose>
-                                                <Button disabled={isDeleting} className="w-full" variant={"secondary"}>No!!!</Button>
-                                            </DialogClose>
-                                            <Button disabled={isDeleting} variant={"destructive"} onClick={() => {
-                                                setDeleting(true);
-                                                deleteModel(modelId, router);
-                                            }}
-                                            >Yes... 🥵</Button>
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                </DialogContent>
-                            </Dialog>
+                            <div className="mt-auto flex flex-wrap gap-2">
+                                <Dialog >
+                                    <DialogTrigger>
+                                        <Button
+                                            disabled={isDeleting}
+                                            type="button"
+                                            variant={"destructive"}
+                                        >
+                                            Delete Model
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader className="gap-4">
+                                            <DialogTitle>Are you sure?</DialogTitle>
+                                            <DialogDescription className="flex gap-4 *:flex-grow">
+                                                <DialogClose>
+                                                    <Button disabled={isDeleting} className="w-full" variant={"secondary"}>No!!!</Button>
+                                                </DialogClose>
+                                                <Button disabled={isDeleting} variant={"destructive"} onClick={() => {
+                                                    setDeleting(true);
+                                                    deleteModel(modelId, router);
+                                                }}
+                                                >Yes... 🥵</Button>
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                    </DialogContent>
+                                </Dialog>
+                                <Button type="button">
+                                    <Link href={"/models/" + modelId} onClick={() => revalidatePath("/models/" + modelId)}>
+                                        View Model Page
+                                    </Link>
+                                </Button>
+                            </div>
                         </form>
                     </Form >
                 </div>

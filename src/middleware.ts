@@ -6,9 +6,10 @@ import { authMiddleware } from "@clerk/nextjs";
 export default authMiddleware({
   publicRoutes: [
     "/",
-    "/user/profile/:id"
+    "/user/profile/:id",
+    "/models/:id"
   ],
-  ignoredRoutes: ['/api/(.*)', '/models/(.*)'],
+  ignoredRoutes: ['/api/(.*)']
 });
 
 export const config = {

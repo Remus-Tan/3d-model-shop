@@ -96,7 +96,7 @@ export default function LikeButton({
                                 }
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-stone-700 text-white">
+                        <TooltipContent className="bg-stone-700 text-white border-none">
                             {likes ? "Unlike" : "Like"}
                         </TooltipContent>
                     </Tooltip>

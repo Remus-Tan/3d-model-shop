@@ -77,7 +77,6 @@ export default function Dropzone() {
         onDropAccepted,
         onDropRejected,
         maxFiles: 1,
-        maxSize: 2000000
     });
 
     return (
@@ -124,7 +123,7 @@ export default function Dropzone() {
                             isDragActive ? "text-stone-500" :
                                 loading ? "text-white" :
                                     ""
-                        }>We only support .gltf files up to 2MB. Don&apos;t upload anything else!</span>
+                        }>We only support <span className='font-semibold'>SINGLE</span> .gltf and .glb files.<br />That means that .gltf files with buffers and textures will not be accepted.<br />Don&apos;t upload anything else!</span>
                     </div>
                 </>
             </div>

@@ -3,7 +3,13 @@ import SettingsForm from "./_components/settings-forms";
 import { Model } from "@prisma/client";
 import { redirect } from "next/navigation";
 import ModelViewer from "./_components/model-viewer";
+import { Metadata } from "next";
+import { Separator } from "@/components/ui/separator";
 
+export const metadata: Metadata = {
+    title: 'Model Settings - Blendy',
+    description: 'Settings for your model',
+};
 export default async function Settings(
     { params }: { params: { id: string } }
 ) {
@@ -21,11 +27,16 @@ export default async function Settings(
     if (user.userId != model.creatorId) {
         redirect(`/models/${params.id}`);
     }
-    
+
     return (
-        <div className="m-auto lg:max-w-6xl flex mt-4">
-            <ModelViewer modelId={params.id} size={{ width: "[600px]", height: "[600px]" }} />
-            <SettingsForm defaultValues={model} modelId={params.id} />
+        <div className="
+            md:flex
+            m-6 justify-center
+            ">
+            <ModelViewer modelId={params.id} sizeClass="md:w-1/2 w-auto aspect-[3/2]" />
+            <Separator className="md:hidden flex my-4" />
+            <SettingsForm modelId={params.id} />
+
         </div>
     );
 }

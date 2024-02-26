@@ -3,21 +3,13 @@
 import { useEffect, useState } from "react";
 
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-import { SignInButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useClerk } from "@clerk/clerk-react";
-
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import { useToast } from "../ui/use-toast";
-import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
 
-import { ChevronDown, Github } from "lucide-react";
-
-import Searchbar from "./searchbar";
-import { revalidatePath } from "next/cache";
+import { Github } from "lucide-react";
 
 export default function Footer() {
     const { isLoaded, isSignedIn, user } = useUser();
@@ -39,15 +31,13 @@ export default function Footer() {
 
     return (
         <nav className="bottom-0 left-0 right-0 bg-primary">
-            <div className="max-w-[2000px] flex items-center pl-10 pr-10 p-2 min-h-max gap-4 m-auto">
+            <div className="max-w-[2000px] flex items-center justify-between pl-10 pr-10 p-2 min-h-max gap-4 m-auto">
                 <Logo />
-                <div className="ml-auto flex gap-10">
-                    <p className="text-white">Thank you for visiting Blendy!</p>
-                    <a href="https://github.com/Remus-Tan/blendy" target="_blank">
-                        <Github stroke="white " />
-
-                    </a>
-                </div>
+                <p className="text-white">Thank you for visiting Blendy!</p>
+                <a href="https://github.com/Remus-Tan/blendy" target="_blank" className="flex gap-2">
+                    <Github stroke="white " />
+                    <span className="text-white">Github</span>
+                </a>
             </div>
         </nav >
     );
@@ -55,7 +45,7 @@ export default function Footer() {
 
     function Logo() {
         return (
-            <>
+            <div className="flex items-center">
                 <Image
                     alt="logo"
                     src="/logo_white.svg"
@@ -67,7 +57,7 @@ export default function Footer() {
                 <p className="text-white text-foreground text-xl font-semibold">
                     Blendy
                 </p>
-            </>
+            </div>
         );
     }
 }

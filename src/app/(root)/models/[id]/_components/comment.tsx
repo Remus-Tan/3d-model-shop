@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { getTimeDiff } from "@/lib/utils";
 
 export default function CommentDisplay(
     { comment }: { comment: Comment }
@@ -52,12 +53,12 @@ export default function CommentDisplay(
                             </Link>
                             <p className="text-muted-foreground text-xs font-light ml-2">(@{commentor.handle})</p>
                         </div>
-                        <p className="text-muted-foreground text-sm font-light">{String(comment.createdAt)}</p>
+                        <p className="text-muted-foreground text-sm font-light">{getTimeDiff(comment.createdAt)}</p>
                         <p className="whitespace-pre-wrap mt-4">
                             {isDeleted ? "Comment deleted!" : comment.comment}
                         </p>
                     </div>
-                    {(user?.id === commentor.id && !isDeleting) &&
+                    {(user?.id === commentor.id && !isDeleting && !isDeleted) &&
                         <div className="ml-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger>
@@ -86,10 +87,6 @@ export default function CommentDisplay(
     async function deleteComment() {
         setDeleting(true);
         fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/comments/${comment.id}`, { method: "DELETE" })
-            .then(() => setDeleted(true));
-    }
-
-    function getTimeDiff() {
-
+            .then(() => {setDeleted(true); setDeleting(false);});
     }
 }

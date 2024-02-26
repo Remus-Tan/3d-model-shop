@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Metadata, ResolvingMetadata } from "next";
 import { Likes, Model, User } from "@prisma/client";
 import FollowButton from "./_components/followButton";
-import { Settings } from "lucide-react";
+import { Box, Settings } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import ModelCard from "@/components/shared/model-card";
 
 export async function generateMetadata(
     { params }: { params: { id: string } },
@@ -50,7 +52,6 @@ async function getUserProfile(
 }
 
 // This function retrieves the count of users following / being followed by the profile that is currently being viewed
-// 
 async function getFollowData(userId: string) {
     const followData = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/follow-data/" + userId, {
         next: {
@@ -226,18 +227,7 @@ export default async function Profile({
                 {
                     likesArray.length !== 0 &&
                     likesArray.map((model: Model) => (
-                        <Card className="w-fit rounded-none shadow-md transition-all hover:scale-105 ease-out" key={model.id}>
-                            <CardContent className="p-0">
-                                <a href={`/models/${model.id}`}>
-                                    <div className="w-96 h-64 bg-red-200">
-                                        Placeholder thumbnail
-                                    </div>
-                                </a >
-                            </CardContent>
-                            <CardFooter className="p-2 pl-4 flex">
-                                {model.name ? model.name : "Unnamed Model"}
-                            </CardFooter>
-                        </Card >
+                        <ModelCard model={model} key={model.id} />
                     ))
                 }
             </div>
@@ -265,26 +255,7 @@ export default async function Profile({
                 {
                     results.length !== 0 &&
                     results.map((model: Model) => (
-                        <Card className="w-fit rounded-none shadow-md transition-all hover:scale-105 ease-out" key={model.id}>
-                            <CardContent className="p-0">
-                                <a href={`/models/${model.id}`}>
-                                    <div className="w-96 h-64 bg-red-200">
-                                        Placeholder thumbnail
-                                    </div>
-                                </a >
-                            </CardContent>
-                            <CardFooter className="p-2 pl-4 flex">
-                                {model.name ? model.name : "Unnamed Model"}
-                                {// @ts-ignore becaused loggedInUser.id may be possibly null and I don't care but typescript is annoying
-                                    model.creatorId != loggedInUser.id &&
-                                    <a
-                                        href={`/models/${model.id}/settings`}
-                                        className="ml-auto hover:animate-spin duration-1000 ease-out">
-                                        <Settings />
-                                    </a>
-                                }
-                            </CardFooter>
-                        </Card >
+                        <ModelCard model={model} key={model.id} />
                     ))
                 }
             </div>

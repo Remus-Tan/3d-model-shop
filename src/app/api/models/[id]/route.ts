@@ -60,14 +60,14 @@ export async function PATCH(
         console.log(`| [models] Trying to PATCH ${JSON.stringify(data)} ~`);
         console.log(`|====================================================================|`);
 
-        const user = await db.model.update({
+        const model = await db.model.update({
             where: {
                 id: Number(params.id)
             },
             data
         });
 
-        return NextResponse.json(user);
+        return NextResponse.json(model);
     } catch (error) {
         console.log("[models]", error);
         console.log("Could not patch for some reason... uh oh!");

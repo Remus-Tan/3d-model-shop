@@ -30,24 +30,23 @@ export async function GET(
                 return NextResponse.json({ error }, { status: 500 });
             }
         }
-    } else {
-        // If no query params provided, get follower / following count
+    }
+
+    if (req.nextUrl.searchParams.get("get_all")) {
+        // GET Request for specific user's list of followed users to retrieve homepage feed
         console.log(`|====================================================================|`);
-        console.log(`| [follow-data] Getting follow counts for current user... ~`);
-        console.log(`| [follow-data] GET ${params.id} ~`);
+        console.log(`| [follow-data] Getting list of followed users... ~`);
+        console.log(`| [follow-data] GET ${params.id}'s follows ~`);
         console.log(`|====================================================================|`);
 
         try {
-            const followerCount = await db.follows.count({
-                where: { followingId: params.id[0] }
+            const result = await db.follows.findMany({
+                where: {
+                    followerId: params.id[0]
+                }
             });
 
-            const followingCount = await db.follows.count({
-                where: { followerId: params.id[0] }
-            });
-
-            return NextResponse.json({ followerCount, followingCount }, { status: 200 });
-
+            return NextResponse.json(result);
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError && error.code == 'P2025') {
                 return NextResponse.json({ error }, { status: 404 });
@@ -57,6 +56,30 @@ export async function GET(
         }
     }
 
+    // If no query params provided, get follower / following count
+    console.log(`|====================================================================|`);
+    console.log(`| [follow-data] Getting follow counts for current user... ~`);
+    console.log(`| [follow-data] GET ${params.id} ~`);
+    console.log(`|====================================================================|`);
+
+    try {
+        const followerCount = await db.follows.count({
+            where: { followingId: params.id[0] }
+        });
+
+        const followingCount = await db.follows.count({
+            where: { followerId: params.id[0] }
+        });
+
+        return NextResponse.json({ followerCount, followingCount }, { status: 200 });
+
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError && error.code == 'P2025') {
+            return NextResponse.json({ error }, { status: 404 });
+        } else {
+            return NextResponse.json({ error }, { status: 500 });
+        }
+    }
 }
 
 export async function POST(

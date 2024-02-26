@@ -14,10 +14,11 @@ import { useToast } from "../ui/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FolderUp } from "lucide-react";
 
 import Searchbar from "./searchbar";
 import { revalidatePath } from "next/cache";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function Topbar() {
     const { isLoaded, isSignedIn, user } = useUser();
@@ -27,7 +28,7 @@ export default function Topbar() {
     const router = useRouter();
     const pathname = usePathname();
 
-    const isSettings = ["/user/settings/profile"].includes(pathname);
+    const isSettings = ["/user/settings/profile", "/user/settings/account"].includes(pathname);
     const logoType = isSettings ? "settings" : "regular";
 
     useEffect(() => {
@@ -81,7 +82,7 @@ export default function Topbar() {
                     height={0}
                     className="w-10"
                 />
-                <p className="text-foreground text-xl font-semibold">
+                <p className="hidden md:flex text-foreground text-xl font-semibold">
                     {type === "regular" && <>Blendy</>}
                     {type === "settings" && <>Back to Profile</>}
                 </p>
@@ -92,9 +93,10 @@ export default function Topbar() {
     function UploadButton() {
         return (
             <Link href="/upload">
-                <Button>
+                <Button className="md:flex hidden">
                     Upload
                 </Button>
+                <FolderUp className="md:hidden flex" />
             </Link>
         );
     }
@@ -104,55 +106,109 @@ export default function Topbar() {
         const [hover, setHover] = useState(false);
 
         return (
-            <HoverCard openDelay={0} closeDelay={30} onOpenChange={(open: boolean) => setHover(open)}>
-                <HoverCardTrigger className="flex items-baseline">
-                    <Image src={user!.imageUrl || ""} alt="Profile picture" width="32" height="32" className="mr-2 rounded-sm" />
-                    <ChevronDown width={12} stroke={hover ? "orange" : "grey"} className="dark:outline" />
-                </HoverCardTrigger>
-                <HoverCardContent className="p-0 pt-2 pb-2 w-32 dark:bg-zinc-700 border-border">
-                    <Link href="/user/profile" onClick={() => { revalidatePath('/user/profile'); }}>
-                        <div className={hoverCardClass}>
-                            Profile
+            <>
+                <HoverCard openDelay={0} closeDelay={30} onOpenChange={(open: boolean) => setHover(open)}>
+                    <HoverCardTrigger className="hidden md:flex items-baseline">
+                        <Image src={user!.imageUrl || ""} alt="Profile picture" width="32" height="32" className="mr-2 rounded-sm" />
+                        <ChevronDown width={12} stroke={hover ? "orange" : "grey"} className="dark:outline" />
+                    </HoverCardTrigger>
+                    <HoverCardContent className="p-0 pt-2 pb-2 w-32 dark:bg-zinc-700 border-border">
+                        <Link href="/user/profile" onClick={() => { revalidatePath('/user/profile'); }}>
+                            <div className={hoverCardClass}>
+                                Profile
+                            </div>
+                        </Link>
+
+                        <hr className="my-2" />
+
+                        <Link href={"/user/profile?tab=models"} onClick={() => { revalidatePath('/user/profile?tab=models'); }}>
+                            <div className={hoverCardClass}>
+                                Models
+                            </div>
+                        </Link>
+                        <Link href={"/user/profile?tab=likes"} onClick={() => { revalidatePath('/user/profile?tab=likes'); }}>
+                            <div className={hoverCardClass}>
+                                Likes
+                            </div>
+                        </Link>
+
+                        <hr className="my-2" />
+
+                        <Link href="/user/settings/profile">
+                            <div className={hoverCardClass}>
+                                Settings
+                            </div>
+                        </Link>
+
+                        <hr className="my-2" />
+
+                        <div onClick={async () => {
+                            await signOut();
+                            router.push('/');
+                            toast({
+                                title: "You're logged out.",
+                                description: "See you again! 😋"
+                            });
+                        }}>
+                            <div className={hoverCardClass}>
+                                Log Out
+                            </div>
                         </div>
-                    </Link>
+                    </HoverCardContent>
+                </HoverCard>
+                
+                {/* Duplicate content for dropdown version for mobile clicking */}
 
-                    <hr className="my-2" />
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="md:hidden flex items-baseline">
+                        <Image src={user!.imageUrl || ""} alt="Profile picture" width="32" height="32" className="mr-2 rounded-sm" />
+                        <ChevronDown width={12} stroke={hover ? "orange" : "grey"} className="dark:outline" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="p-0 pt-2 pb-2 w-32 border-border">
+                        <Link href="/user/profile" onClick={() => { revalidatePath('/user/profile'); }}>
+                            <div className={hoverCardClass}>
+                                Profile
+                            </div>
+                        </Link>
 
-                    <Link href={"/user/profile?tab=models"} onClick={() => { revalidatePath('/user/profile?tab=models'); }}>
-                        <div className={hoverCardClass}>
-                            Models
+                        <hr className="my-2" />
+
+                        <Link href={"/user/profile?tab=models"} onClick={() => { revalidatePath('/user/profile?tab=models'); }}>
+                            <div className={hoverCardClass}>
+                                Models
+                            </div>
+                        </Link>
+                        <Link href={"/user/profile?tab=likes"} onClick={() => { revalidatePath('/user/profile?tab=likes'); }}>
+                            <div className={hoverCardClass}>
+                                Likes
+                            </div>
+                        </Link>
+
+                        <hr className="my-2" />
+
+                        <Link href="/user/settings/profile">
+                            <div className={hoverCardClass}>
+                                Settings
+                            </div>
+                        </Link>
+
+                        <hr className="my-2" />
+
+                        <div onClick={async () => {
+                            await signOut();
+                            router.push('/');
+                            toast({
+                                title: "You're logged out.",
+                                description: "See you again! 😋"
+                            });
+                        }}>
+                            <div className={hoverCardClass}>
+                                Log Out
+                            </div>
                         </div>
-                    </Link>
-                    <Link href={"/user/profile?tab=likes"} onClick={() => { revalidatePath('/user/profile?tab=likes'); }}>
-                        <div className={hoverCardClass}>
-                            Likes
-                        </div>
-                    </Link>
-
-                    <hr className="my-2" />
-
-                    <Link href="/user/settings/profile">
-                        <div className={hoverCardClass}>
-                            Settings
-                        </div>
-                    </Link>
-
-                    <hr className="my-2" />
-
-                    <div onClick={async () => {
-                        await signOut();
-                        router.push('/');
-                        toast({
-                            title: "You're logged out.",
-                            description: "See you again! 😋"
-                        });
-                    }}>
-                        <div className={hoverCardClass}>
-                            Log Out
-                        </div>
-                    </div>
-                </HoverCardContent>
-            </HoverCard>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </>
         );
     }
 
