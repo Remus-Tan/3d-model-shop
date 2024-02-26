@@ -33,12 +33,12 @@ export default async function Feed() {
                     <p className="pl-8 pt-8 text-2xl font-medium">
                         Catch up with this week&apos;s uploads!
                     </p>
-                    <p className="pl-8">You&apos;ll find all of your favorite creator&apos;s updated models here. (Last 7 days)</p>
+                    <p className="pl-8 pb-8">You&apos;ll find all of your favorite creator&apos;s updated models here. (Last 7 days)</p>
                     {followedUsers.map((user: User) => {
                         return (
                             <>
+                                <Separator className="h-2" />
                                 <FeedRow key={user.id} creator={user} />
-                                <Separator />
                             </>
                         );
                     })}
