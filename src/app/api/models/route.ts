@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
     req: Request
@@ -48,7 +48,7 @@ export async function PATCH(
 
 // Get top ten based on updated date
 export async function GET(
-    req: Request
+    req: NextRequest
 ) {
     try {
         const results = await db.model.findMany({
@@ -58,7 +58,7 @@ export async function GET(
             orderBy:{
                 updatedAt: 'desc'
             },
-            take: 10
+            take: Number(req.nextUrl.searchParams.get("take"))
         });
 
         return NextResponse.json(results);

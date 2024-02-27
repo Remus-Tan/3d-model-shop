@@ -1,25 +1,40 @@
 import { db } from "@/lib/db";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-    req: Request,
-    { params }: { params: { searchQuery: string } }) {
+    req: NextRequest,
+    { params }: { params: { searchQuery: string } }
+) {
     console.log(`|====================================================================|`);
     console.log(`| [model/search] Retrieving all models matching search... ~`);
     console.log(`| [model/search] GET ${params.searchQuery}`);
     console.log(`|====================================================================|`);
 
     try {
-        const results = await db.model.findMany({
-            where: {
-                name: {
-                    contains: params.searchQuery
-                }
-            }
-        });
+        if (req.nextUrl.searchParams.get("take")) {
+            console.log(Number(req.nextUrl.searchParams.get("take")));
+            const results = await db.model.findMany({
+                where: {
+                    name: {
+                        contains: params.searchQuery
+                    }
+                },
+                take: Number(req.nextUrl.searchParams.get("take"))
+            });
 
-        return NextResponse.json(results);
+            return NextResponse.json(results);
+        } else {
+            const results = await db.model.findMany({
+                where: {
+                    name: {
+                        contains: params.searchQuery
+                    }
+                }
+            });
+
+            return NextResponse.json(results);
+        }
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError && error.code == 'P2025') {
             return NextResponse.json({ error }, { status: 404 });

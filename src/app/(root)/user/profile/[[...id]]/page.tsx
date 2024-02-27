@@ -7,8 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Metadata, ResolvingMetadata } from "next";
 import { Likes, Model, User } from "@prisma/client";
 import FollowButton from "./_components/followButton";
-import { Box, Settings } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ModelCard from "@/components/shared/model-card";
 
 export async function generateMetadata(

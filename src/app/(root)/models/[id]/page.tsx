@@ -1,5 +1,5 @@
 import { Metadata, ResolvingMetadata } from "next";
-import ModelView from "./_components/modelview";
+import ModelView from "./_components/model-view";
 import { Model, User } from "@prisma/client";
 
 export async function generateMetadata(

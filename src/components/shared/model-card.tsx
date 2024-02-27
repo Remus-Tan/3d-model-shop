@@ -4,7 +4,6 @@ import { Model, User } from "@prisma/client";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Box, Settings } from "lucide-react";
 import { currentUser } from "@clerk/nextjs";
-import { getTimeDiff } from "@/lib/utils";
 
 export default async function ModelCard(
     { model }: { model: Model }
@@ -34,8 +33,7 @@ export default async function ModelCard(
 
                 <div className="ml-auto flex gap-2 items-center">
                     <p className="text-sm text-muted-foreground">Uploaded {new Date(model.createdAt).toLocaleDateString()}</p>
-                    {// @ts-ignore becaused loggedInUser.id may be possibly null and I don't care but typescript is annoying
-                        model.creatorId == loggedInUser.id &&
+                        {loggedInUser && (model.creatorId == loggedInUser.id) &&
                         <TooltipProvider delayDuration={0}>
                             <Tooltip>
                                 <TooltipTrigger className="hover:animate-spin duration-1000 ease-out">
