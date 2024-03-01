@@ -12,22 +12,11 @@ import { useToast } from "../ui/use-toast";
 import { Github } from "lucide-react";
 
 export default function Footer() {
-    const { isLoaded, isSignedIn, user } = useUser();
-    const [loading, setLoading] = useState(true);
-    const { signOut } = useClerk();
-    const { toast } = useToast();
-    const router = useRouter();
+    const { isLoaded } = useUser();
+    const [ setLoading] = useState(true);
     const pathname = usePathname();
 
     const isSettings = ["/user/settings/profile"].includes(pathname);
-    const logoType = isSettings ? "settings" : "regular";
-
-    useEffect(() => {
-        if (isLoaded == false) return;
-
-        setLoading(false);
-
-    }, [isLoaded]);
 
     return (
         <nav className="bottom-0 left-0 right-0 bg-primary">

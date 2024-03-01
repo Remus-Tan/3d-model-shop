@@ -2,7 +2,7 @@ import { currentUser } from "@clerk/nextjs";
 import HomeNav from "../_components/home-nav";
 import { Follows, User } from "@prisma/client";
 import { Separator } from "@/components/ui/separator";
-import FeedRow from "../_components/feedrow";
+import FeedRow from "../_components/feed-row";
 
 export default async function Feed() {
     const user = await currentUser();

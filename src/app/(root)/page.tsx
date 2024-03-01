@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <HomeNav />
-      <div className="flex flex-col w-full justify-center items-center bg-gradient-to-r from-amber-500 to-pink-500 gap-4 h-[80vh] *:flex-grow-0">
+      <div className="flex flex-col w-full justify-center items-center bg-gradient-to-r from-amber-500 to-pink-500 gap-4 h-[90svh] *:flex-grow-0">
         <p className="text-white text-4xl font-bold">
           Start browsing 3D Models
         </p>

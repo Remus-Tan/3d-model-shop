@@ -21,7 +21,7 @@ export default function RootLayout({
       <html lang="en" className={GeistSans.className}>
         <body className="bg-background">
           <Topbar />
-          <main className='min-h-[calc(100svh-50px)] pb-20'>{children}</main>
+          <main className='min-h-svh'>{children}</main>
           <Footer/>
           <Toaster />
         </body>
