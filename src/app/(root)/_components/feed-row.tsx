@@ -2,7 +2,7 @@ import ModelCard from "@/components/shared/model-card";
 import { Model, User } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import FollowButton from "../user/profile/[[...id]]/_components/followButton";
+import FollowButton from "../user/profile/[[...id]]/_components/follow-button";
 import { currentUser } from "@clerk/nextjs";
 
 export default async function FeedRow({ creator }: { creator: User }) {
