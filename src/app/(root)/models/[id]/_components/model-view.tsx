@@ -94,7 +94,7 @@ export default async function ModelView(
                 {
                     user?.id == model.creatorId &&
                     <Button>
-                        <Link href={`/models/${params.id}/settings`} onClick={() => revalidatePath(`/models/${params.id}/settings`)}>Edit Settings</Link>
+                        <Link href={`/models/${params.id}/settings`}>Edit Settings</Link>
                     </Button>
                 }
             </div >

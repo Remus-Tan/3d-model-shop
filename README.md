@@ -3,7 +3,7 @@
 Blendy is a website built with Next.js 14.
 
 React + Tailwind 🎨🍃  
-Prisma 🧊  ( Planetscale )  
+Prisma 🧊 
 Clerk authentication 🐾
 Firebase Storage 🔥
 
@@ -32,7 +32,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You will need to create a local .env file with the following variables:
 ```ini
 # refer to: https://www.prisma.io/docs/orm/reference/connection-urls
+# I'm using Supabase / Postgres, please change this accordingly
 DATABASE_URL='your_url'
+DIRECT_URL='your_url'
 
 # Change this if you want to use a different port
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
