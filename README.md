@@ -11,23 +11,9 @@ You may find the deployed production build by clicking the link in the about sec
 
 I named it Blendy because Blender is a great software and I don't have any brilliant ideas...
 
-## Hosting your own copy
+## Run Dev Server Locally
 
 Fork / clone this repository to your own local environment. Or just download the files.
-
-Then, run the development server (You will need to have Node.js installed of course, this is developed on Node v20.10.0):
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You will need to create a local .env file with the following variables:
 ```ini
@@ -50,6 +36,20 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboard
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboard
 ```
+
+Then, run the development server (You will need to have Node.js installed of course, this is developed on Node v20.10.0):
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Learn More
 
