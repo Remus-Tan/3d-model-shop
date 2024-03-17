@@ -7,6 +7,7 @@ export default authMiddleware({
   publicRoutes: [
     "/",
     "/browse",
+    "/search",
     "/search/:id",
     "/user/profile/:id",
     "/models/:id"
