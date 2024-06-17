@@ -1,6 +1,6 @@
 ## Thank you for visiting Blendy!
 
-Blendy is a website built with Next.js 14.
+Blendy is a web app for users to view and share 3D models built with Next.js 14.
 
 React + Tailwind 🎨🍃  
 Prisma 🧊 
