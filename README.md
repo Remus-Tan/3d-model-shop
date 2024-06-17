@@ -3,8 +3,8 @@
 Blendy is a web app for users to view and share 3D models built with Next.js 14.
 
 React + Tailwind 🎨🍃  
-Prisma 🧊 
-Clerk authentication 🐾
+Prisma 🧊  
+Clerk authentication 🐾  
 Firebase Storage 🔥
 
 You may find the deployed production build by clicking the link in the about section (top-right of this page).
